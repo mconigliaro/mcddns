@@ -5,28 +5,28 @@ import updatemyip.options as options
 import updatemyip.plugin as plugin
 
 
+# FIXME: Required for this plugin
 options.parser.add_argument("--aws-route53-hosted-zone-id")
 
 
 def update_dns(options, addr):
-    fqdn = f"{options['fqdn']}."
-    rrs = [{"Value": f"{addr}"}]
-
     try:
         client = boto3.client("route53")
-        rrsets = client.list_resource_record_sets(
+        fqdn = f"{options['fqdn']}."
+        record_set = client.list_resource_record_sets(
             HostedZoneId=options["aws_route53_hosted_zone_id"],
             StartRecordName=fqdn,
             MaxItems="1",
         )["ResourceRecordSets"][0]
 
         changes = []
-        if rrsets["Name"] == fqdn and rrsets["Type"] != options["dns_rrtype"]:
-            changes.append({"Action": "DELETE", "ResourceRecordSet": rrsets})
+        if record_set["Name"] == fqdn and record_set["Type"] != options["dns_rrtype"]:
+            changes.append({"Action": "DELETE", "ResourceRecordSet": record_set})
 
-        if (rrsets["Name"] == fqdn and rrsets["ResourceRecords"] != rrs) or rrsets[
-            "Name"
-        ] != fqdn:
+        records = [{"Value": f"{addr}"}]
+        if (
+            record_set["Name"] == fqdn and record_set["ResourceRecords"] != records
+        ) or record_set["Name"] != fqdn:
             changes.append(
                 {
                     "Action": "UPSERT",
@@ -34,7 +34,7 @@ def update_dns(options, addr):
                         "Name": fqdn,
                         "Type": options["dns_rrtype"],
                         "TTL": options["dns_ttl"],
-                        "ResourceRecords": rrs,
+                        "ResourceRecords": records,
                     },
                 }
             )
@@ -49,6 +49,5 @@ def update_dns(options, addr):
             return plugin.PLUGIN_NOOP
 
     except be.ClientError as e:
-        error = e.response["Error"]
-        log.error(f"{error['Code']}: {error['Message']}")
+        log.error(f"{e.response['Error']['Code']}: {e.response['Error']['Message']}")
         return plugin.PLUGIN_FAILURE
