@@ -3,4 +3,4 @@
 import updatemyip
 
 
-updatemyip.main()
+exit(updatemyip.main())

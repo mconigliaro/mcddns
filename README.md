@@ -25,5 +25,6 @@ Use `--help` to see available options.
 
 ### To Do
 
-- Implement `updatemyip_aws_route53`
 - Add tests
+- Better error handling
+- Finalize plugin API

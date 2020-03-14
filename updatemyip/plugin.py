@@ -6,6 +6,10 @@ PLUGIN_PREFIX = "updatemyip_"
 PLUGIN_ADDR_FN = "get_addr"
 PLUGIN_DNS_FN = "update_dns"
 
+PLUGIN_NOOP = 0
+PLUGIN_SUCCESS = 1
+PLUGIN_FAILURE = 2
+
 
 def list_plugins(prefix=PLUGIN_PREFIX):
     return [p.name for p in pu.iter_modules() if p.name.startswith(prefix)]
