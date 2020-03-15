@@ -14,46 +14,42 @@ def options(*args, **kwargs):
 @plugin.register_plugin(plugin.PLUGIN_TYPE_DNS)
 def route53(*args, **kwargs):
     options = kwargs["options"]
-    fqdn = f"{options.fqdn}."
+    fqdn = options.fqdn if options.fqdn.endswith(".") else f"{options.fqdn}."
     records = [{"Value": kwargs["address"]}]
 
     try:
         client = boto3.client("route53")
 
-        # FIXME: IndexError when no records returned
-        record_set = client.list_resource_record_sets(
+        rrsets = client.list_resource_record_sets(
             HostedZoneId=options.aws_route53_hosted_zone_id,
             StartRecordName=fqdn,
             MaxItems="1",
-        )["ResourceRecordSets"][0]
+        )["ResourceRecordSets"]
 
         changes = []
-        if record_set["Name"] == fqdn and record_set["Type"] != options.dns_rrtype:
-            changes.append({"Action": "DELETE", "ResourceRecordSet": record_set})
+        if rrsets and rrsets[0]["Name"] == fqdn:
+            if rrsets[0]["Type"] != options.dns_rrtype:
+                changes.append({"Action": "DELETE", "ResourceRecordSet": rrsets[0]})
+            elif rrsets[0]["ResourceRecords"] == records:
+                return plugin.PLUGIN_STATUS_NOOP
 
-        if (
-            record_set["Name"] == fqdn and record_set["ResourceRecords"] != records
-        ) or record_set["Name"] != fqdn:
-            changes.append(
-                {
-                    "Action": "UPSERT",
-                    "ResourceRecordSet": {
-                        "Name": fqdn,
-                        "Type": options.dns_rrtype,
-                        "TTL": options.dns_ttl,
-                        "ResourceRecords": records,
-                    },
-                }
-            )
+        changes.append(
+            {
+                "Action": "UPSERT",
+                "ResourceRecordSet": {
+                    "Name": fqdn,
+                    "Type": options.dns_rrtype,
+                    "TTL": options.dns_ttl,
+                    "ResourceRecords": records,
+                },
+            }
+        )
 
-        if changes:
-            client.change_resource_record_sets(
-                HostedZoneId=options.aws_route53_hosted_zone_id,
-                ChangeBatch={"Changes": changes},
-            )
-            return plugin.PLUGIN_STATUS_SUCCESS
-        else:
-            return plugin.PLUGIN_STATUS_NOOP
+        client.change_resource_record_sets(
+            HostedZoneId=options.aws_route53_hosted_zone_id,
+            ChangeBatch={"Changes": changes},
+        )
+        return plugin.PLUGIN_STATUS_SUCCESS
 
     except be.ClientError as e:
         log.error(f"{e.response['Error']['Code']}: {e.response['Error']['Message']}")
