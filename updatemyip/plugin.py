@@ -1,31 +1,58 @@
 import importlib as il
+import inspect as ins
+import os
 import pkgutil as pu
+import sys
+
+MODULE_PREFIX = f"{__package__}_"
+
+PLUGIN_TYPE_ADDRESS = 0
+PLUGIN_TYPE_DNS = 1
+PLUGIN_TYPES = (PLUGIN_TYPE_ADDRESS, PLUGIN_TYPE_DNS)
+
+_PLUGIN_REGISTRY = {}
+
+PLUGIN_STATUS_NOOP = 0
+PLUGIN_STATUS_SUCCESS = 1
+PLUGIN_STATUS_FAILURE = 2
 
 
-PLUGIN_PREFIX = "updatemyip_"
-PLUGIN_ADDR_FN = "get_addr"
-PLUGIN_DNS_FN = "update_dns"
-
-PLUGIN_NOOP = 0
-PLUGIN_SUCCESS = 1
-PLUGIN_FAILURE = 2
+class PluginError(Exception):
+    pass
 
 
-def list_plugins(prefix=PLUGIN_PREFIX):
-    return [p.name for p in pu.iter_modules() if p.name.startswith(prefix)]
+class UnknownPluginError(PluginError):
+    pass
 
 
-def import_plugins(
-    plugins, prefix=PLUGIN_PREFIX, addr_fn=PLUGIN_ADDR_FN, dns_fn=PLUGIN_DNS_FN
-):
-    addr_plugins = {}
-    dns_plugins = {}
-    for p in plugins:
-        module = il.import_module(p)
-        plugin_name = p[len(prefix) :]
-        dir_module = dir(module)
-        if addr_fn in dir_module:
-            addr_plugins[plugin_name] = module
-        if dns_fn in dir_module:
-            dns_plugins[plugin_name] = module
-    return addr_plugins, dns_plugins
+class InvalidPluginTypeError(PluginError):
+    pass
+
+
+def import_modules():
+    sys.path.append(os.path.join(os.path.dirname(__file__), "plugins"))
+    modules = [m.name for m in pu.iter_modules() if m.name.startswith(MODULE_PREFIX)]
+    return {m: il.import_module(m) for m in modules}
+
+
+def register_plugin(type):
+    def wrapper(fn):
+        if type not in PLUGIN_TYPES:
+            raise InvalidPluginTypeError(f"Invalid plugin type: {type}")
+        module = ins.getmodule(ins.stack()[1][0]).__name__[len(MODULE_PREFIX) :]
+        _PLUGIN_REGISTRY[f"{module}.{fn.__name__}"] = {"type": type, "function": fn}
+
+    return wrapper
+
+
+def list_plugins(type):
+    if type not in PLUGIN_TYPES:
+        raise InvalidPluginTypeError(f"Invalid plugin type: {type}")
+    return [name for name, info in _PLUGIN_REGISTRY.items() if info["type"] == type]
+
+
+def get_plugin(name):
+    try:
+        return _PLUGIN_REGISTRY[name]
+    except KeyError as e:
+        raise UnknownPluginError(f"Unknown plugin: {name}")

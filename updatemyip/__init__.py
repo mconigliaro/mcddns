@@ -4,41 +4,65 @@ import updatemyip.plugin as plugin
 
 
 def main():
-    addr_plugins, dns_plugins = plugin.import_plugins(plugin.list_plugins())
+    modules = plugin.import_modules()
+    address_plugins = plugin.list_plugins(plugin.PLUGIN_TYPE_ADDRESS)
+    dns_plugins = plugin.list_plugins(plugin.PLUGIN_TYPE_DNS)
 
-    opts = options.parse(addr_plugins.keys(), dns_plugins.keys())
-    opts_dict = vars(opts)
+    options.parser.add_argument("fqdn")
+    options.parser.add_argument(
+        "-a", "--address-plugin", choices=address_plugins, default="ipify.ipv4",
+    )
+    options.parser.add_argument(
+        "-d", "--dns-plugin", choices=dns_plugins, default="aws.route53",
+    )
+    options.parser.add_argument("--dns-rrtype", default="A")
+    options.parser.add_argument("--dns-ttl", default=300)
+
+    options.parser.add_argument(
+        "--log-level",
+        choices=("debug", "info", "warning", "error", "critical"),
+        default="info",
+    )
+
+    opts = options.parser.parse_args(namespace=options.Options())
 
     log_format = "[%(levelname)s] %(message)s"
     log_level = getattr(log, opts.log_level.upper())
     log.basicConfig(format=log_format, level=log_level)
 
-    log.debug(
-        f"Discovered plugins: Address={','.join(addr_plugins.keys())} DNS={','.join(dns_plugins.keys())}"
-    )
+    log.debug(f"Modules: {', '.join(modules.keys())}")
+    log.debug(f"Address plugins: {', '.join(address_plugins)}")
+    log.debug(f"DNS plugins: {', '.join(dns_plugins)}")
+    log.debug(f"Options: {options.log(opts)}")
 
-    log.debug(f"Options: {opts_dict}")
+    address = get_address(opts.address_plugin, opts)
+    dns_result = update_dns(opts.dns_plugin, opts, address)
 
-    addr_fn = getattr(addr_plugins[opts.addr_plugin], plugin.PLUGIN_ADDR_FN)
-    log.debug(f"Calling {opts.addr_plugin}.{plugin.PLUGIN_ADDR_FN}()")
-    addr = addr_fn(opts_dict)
-    log.debug(f"Got address: {addr}")
+    return exit_status(dns_result, opts.fqdn, address)
 
-    dns_fn = getattr(dns_plugins[opts.dns_plugin], plugin.PLUGIN_DNS_FN)
-    log.debug(f"Calling {opts.dns_plugin}.{plugin.PLUGIN_DNS_FN}()")
-    result = dns_fn(opts_dict, addr)
 
-    if result == plugin.PLUGIN_NOOP:
-        log.info(f"No changes required")
-        exit_code = 0
-    elif result == plugin.PLUGIN_SUCCESS:
-        log.info(f"Changed {opts.fqdn} to {addr}")
-        exit_code = 0
-    elif result == plugin.PLUGIN_FAILURE:
-        log.error(f"Update failed")
-        exit_code = 1
+def get_address(address_plugin, options):
+    log.debug(f"Calling address plugin: {address_plugin}")
+    address = plugin.get_plugin(address_plugin)["function"](options=options)
+    log.info(f"Got address: {address}")
+    return address
+
+
+def update_dns(dns_plugin, options, address):
+    log.debug(f"Calling DNS plugin: {dns_plugin}")
+    return plugin.get_plugin(dns_plugin)["function"](options=options, address=address)
+
+
+def exit_status(plugin_status, fqdn, address):
+    if plugin_status == plugin.PLUGIN_STATUS_NOOP:
+        log.info(f"No DNS update required")
+        return 0
+    elif plugin_status == plugin.PLUGIN_STATUS_SUCCESS:
+        log.info(f"DNS updated: {fqdn} -> {address}")
+        return 0
+    elif plugin_status == plugin.PLUGIN_STATUS_FAILURE:
+        log.error(f"DNS update failed")
+        return 1
     else:
-        log.error(f"Plugin ({opts.dns_plugin}) status unknown: {result}")
-        exit_code = 1
-
-    return exit_code
+        log.error(f"DNS plugin returned unknown status: {plugin_status}")
+        return 1
