@@ -4,7 +4,7 @@ import logging as log
 import updatemyip.plugin as plugin
 
 
-@plugin.register_options("route53")
+@plugin.register_plugin_options("route53")
 def options(*args, **kwargs):
     parser = kwargs["parser"]
     parser.add_argument("--aws-route53-hosted-zone-id", default="CHANGE_ME")

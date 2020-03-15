@@ -23,8 +23,11 @@ Use `--help` to see available options.
     pipenv shell
     ...
 
+### Running Tests
+
+    pytest
+
 ### To Do
 
-- Add tests
-- Finalize plugin API
+- Add built-in plugin tests
 - How to deal with required plugin options?

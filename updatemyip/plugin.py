@@ -48,7 +48,7 @@ def register_plugin(type):
     return wrapper
 
 
-def register_options(plugin):
+def register_plugin_options(plugin):
     def wrapper(fn):
         full_name = _plugin_full_name(plugin)
         _PLUGIN_REGISTRY["options"][full_name] = fn
@@ -73,12 +73,12 @@ def get_plugin(name):
         raise errors.NoSuchPluginError(f"No such plugin: {name}")
 
 
-def add_options(parser):
-    return [
-        fn(parser=parser.add_argument_group(f"{name} arguments"))
+def list_plugin_options():
+    return {
+        name: fn
         for name, fn in _PLUGIN_REGISTRY["options"].items()
-        if name in _PLUGIN_REGISTRY["plugin"].keys()
-    ]
+        if name in _PLUGIN_REGISTRY["plugin"]
+    }
 
 
 def _plugin_full_name(plugin):
@@ -88,4 +88,8 @@ def _plugin_full_name(plugin):
 
 
 def _strip_module_prefix(name):
-    return name[len(PLUGIN_MODULE_PREFIX) :]
+    return (
+        name[len(PLUGIN_MODULE_PREFIX) :]
+        if name.startswith(PLUGIN_MODULE_PREFIX)
+        else name
+    )

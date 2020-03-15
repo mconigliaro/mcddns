@@ -49,7 +49,8 @@ def parse(args=None):
         help="show messages of this level or higher",
     )
 
-    plugin.add_options(parser)
+    for name, fn in plugin.list_plugin_options().items():
+        fn(parser=parser.add_argument_group(f"{name} arguments"))
 
     options = parser.parse_args(args)
 
