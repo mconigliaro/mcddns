@@ -1,9 +1,19 @@
 import importlib as il
 import inspect as ins
+import os
 import pkgutil as pu
 import sys
 import updatemyip.errors as errors
 
+PLUGIN_MODULE_PATHS = [
+    os.path.join(
+        os.getenv("XDG_CONFIG_HOME", os.path.join(os.getenv("HOME"), ".config")),
+        __package__,
+        "plugins",
+    ),
+    os.path.join(os.sep, "etc", __package__, "plugins"),
+    os.path.join(os.path.dirname(__file__), "plugins"),
+]
 PLUGIN_MODULE_PREFIX = f"{__package__}_"
 
 PLUGIN_TYPE_ADDRESS = 0
@@ -70,5 +80,10 @@ def add_options(parser):
 
 
 def _plugin_full_name(plugin):
-    module = ins.getmodule(ins.stack()[2][0]).__name__[len(PLUGIN_MODULE_PREFIX) :]
+    caller = ins.getmodule(ins.stack()[2][0]).__name__
+    module = _strip_module_prefix(caller)
     return f"{module}.{plugin}"
+
+
+def _strip_module_prefix(name):
+    return name[len(PLUGIN_MODULE_PREFIX) :]

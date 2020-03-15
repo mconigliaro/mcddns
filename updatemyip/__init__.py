@@ -1,12 +1,10 @@
 import logging as log
-import os
 import updatemyip.options as options
 import updatemyip.plugin as plugin
 
 
 def main():
-    builtin_plugins = os.path.join(os.path.dirname(__file__), "plugins")
-    plugin.import_modules(builtin_plugins)
+    plugin.import_modules(*plugin.PLUGIN_MODULE_PATHS)
 
     opts = options.parse()
     address = get_address(opts.address_plugin, opts)
