@@ -1,6 +1,7 @@
 import argparse as ap
 import logging as log
 import sys
+import updatemyip.meta as meta
 import updatemyip.plugin as plugin
 
 
@@ -8,7 +9,10 @@ def parse(args=None):
     address_plugins = plugin.list_plugins(plugin.PLUGIN_TYPE_ADDRESS)
     dns_plugins = plugin.list_plugins(plugin.PLUGIN_TYPE_DNS)
 
-    parser = ap.ArgumentParser()
+    parser = ap.ArgumentParser(epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})")
+    parser.add_argument(
+        "-v", "--version", action="version", version=f"{meta.NAME} {meta.VERSION}"
+    )
 
     parser.add_argument("fqdn", help="fully-qualified domain name")
 

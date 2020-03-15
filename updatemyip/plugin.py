@@ -3,6 +3,7 @@ import inspect as ins
 import os
 import pkgutil as pu
 import sys
+import updatemyip.meta as meta
 import updatemyip.errors as errors
 
 PLUGIN_MODULE_PATHS = [
@@ -14,7 +15,7 @@ PLUGIN_MODULE_PATHS = [
     os.path.join(os.sep, "etc", __package__, "plugins"),
     os.path.join(os.path.dirname(__file__), "plugins"),
 ]
-PLUGIN_MODULE_PREFIX = f"{__package__}_"
+PLUGIN_MODULE_PREFIX = f"{meta.NAME}_"
 
 PLUGIN_TYPE_ADDRESS = 0
 PLUGIN_TYPE_DNS = 1
