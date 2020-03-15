@@ -4,7 +4,6 @@ import logging as log
 import updatemyip.plugin as plugin
 
 
-# FIXME: How to deal with required plugin options?
 @plugin.register_options("route53")
 def options(*args, **kwargs):
     parser = kwargs["parser"]

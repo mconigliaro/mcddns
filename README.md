@@ -26,5 +26,5 @@ Use `--help` to see available options.
 ### To Do
 
 - Add tests
-- Better error handling
 - Finalize plugin API
+- How to deal with required plugin options?
