@@ -1,18 +1,18 @@
 import boto3
 import botocore.exceptions as be
 import logging as log
-import updatemyip.options as options
 import updatemyip.plugin as plugin
 
 
 # FIXME: How to deal with required plugin options?
 @plugin.register_options("route53")
-def options(parser):
-    parser.add_argument("--aws-route53-hosted-zone-id")
+def options(*args, **kwargs):
+    parser = kwargs["parser"]
+    parser.add_argument("--aws-route53-hosted-zone-id", default="CHANGE_ME")
 
 
 @plugin.register_plugin(plugin.PLUGIN_TYPE_DNS)
-def route53(**kwargs):
+def route53(*args, **kwargs):
     options = kwargs["options"]
     fqdn = f"{options.fqdn}."
     records = [{"Value": kwargs["address"]}]
