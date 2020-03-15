@@ -24,6 +24,8 @@ def main():
         default="info",
     )
 
+    plugin.add_arguments(options.parser)
+
     opts = options.parser.parse_args(namespace=options.Options())
 
     log_format = "[%(levelname)s] %(message)s"
@@ -43,14 +45,14 @@ def main():
 
 def get_address(address_plugin, options):
     log.debug(f"Calling address plugin: {address_plugin}")
-    address = plugin.get_plugin(address_plugin)["function"](options=options)
+    address = plugin.get_plugin(address_plugin)(options=options)
     log.info(f"Got address: {address}")
     return address
 
 
 def update_dns(dns_plugin, options, address):
     log.debug(f"Calling DNS plugin: {dns_plugin}")
-    return plugin.get_plugin(dns_plugin)["function"](options=options, address=address)
+    return plugin.get_plugin(dns_plugin)(options=options, address=address)
 
 
 def exit_status(plugin_status, fqdn, address):

@@ -6,7 +6,9 @@ import updatemyip.plugin as plugin
 
 
 # FIXME: How to deal with required plugin options?
-options.parser.add_argument("--aws-route53-hosted-zone-id")
+@plugin.register_options("route53")
+def options(parser):
+    parser.add_argument("--aws-route53-hosted-zone-id")
 
 
 @plugin.register_plugin(plugin.PLUGIN_TYPE_DNS)
