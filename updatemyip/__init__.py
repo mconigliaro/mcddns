@@ -10,19 +10,22 @@ def main():
 
     options.parser.add_argument("fqdn")
     options.parser.add_argument(
-        "-a", "--address-plugin", choices=address_plugins, default="ipify.ipv4",
-    )
-    options.parser.add_argument(
-        "-d", "--dns-plugin", choices=dns_plugins, default="aws.route53",
-    )
-    options.parser.add_argument("--dns-rrtype", default="A")
-    options.parser.add_argument("--dns-ttl", default=300)
-
-    options.parser.add_argument(
         "--log-level",
         choices=("debug", "info", "warning", "error", "critical"),
         default="info",
     )
+
+    address_group = options.parser.add_argument_group("address plugin arguments")
+    address_group.add_argument(
+        "-a", "--address-plugin", choices=address_plugins, default="ipify.ipv4",
+    )
+
+    dns_group = options.parser.add_argument_group("dns plugin arguments")
+    dns_group.add_argument(
+        "-d", "--dns-plugin", choices=dns_plugins, default="aws.route53",
+    )
+    dns_group.add_argument("--dns-rrtype", default="A")
+    dns_group.add_argument("--dns-ttl", default=300)
 
     plugin.add_arguments(options.parser)
 
