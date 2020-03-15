@@ -1,5 +1,7 @@
 import argparse as ap
 import os
+import pytest as pt
+import updatemyip.errors as errors
 import updatemyip.plugin as plugin
 
 
@@ -16,8 +18,18 @@ def test_list_dns_plugins():
     assert plugin.list_plugins(plugin.PLUGIN_TYPE_DNS) == ["test.dns"]
 
 
+def test_list_invalid_plugins():
+    with pt.raises(errors.InvalidPluginTypeError):
+        plugin.list_plugins(-1)
+
+
 def test_get_plugin():
     assert plugin.get_plugin("test.address")() == "test address plugin"
+
+
+def test_get_plugin_unknown():
+    with pt.raises(errors.NoSuchPluginError):
+        plugin.get_plugin("test.unknown")()
 
 
 def test_list_plugin_options():
