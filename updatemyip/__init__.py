@@ -3,10 +3,11 @@ import updatemyip.options as options
 import updatemyip.plugin as plugin
 
 
-def main():
-    plugin.import_modules(*plugin.PLUGIN_MODULE_PATHS)
+# FIXME: Needs tests
+def main(plugin_module_paths=[], args=None):
+    plugin.import_modules(*plugin_module_paths)
 
-    opts = options.parse()
+    opts = options.parse(args)
     address = get_address(opts.address_plugin, opts)
     dns_result = update_dns(opts.dns_plugin, opts, address)
 

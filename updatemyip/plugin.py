@@ -8,15 +8,7 @@ import sys
 import updatemyip.meta as meta
 import updatemyip.errors as errors
 
-PLUGIN_MODULE_PATHS = [
-    os.path.join(
-        os.getenv("XDG_CONFIG_HOME", os.path.join(os.getenv("HOME"), ".config")),
-        __package__,
-        "plugins",
-    ),
-    os.path.join(os.sep, "etc", __package__, "plugins"),
-    os.path.join(os.path.dirname(__file__), "plugins"),
-]
+PLUGIN_MODULE_BUILTIN_PATH = os.path.join(os.path.dirname(__file__), "plugins")
 PLUGIN_MODULE_PREFIX = f"{meta.NAME}_"
 
 PLUGIN_TYPE_ADDRESS = 0

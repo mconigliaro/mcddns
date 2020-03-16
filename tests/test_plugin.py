@@ -6,7 +6,8 @@ import updatemyip.plugin as plugin
 
 
 def test_import_modules():
-    modules = plugin.import_modules(*os.path.join(os.path.dirname(__file__), "plugins"))
+    test_module_path = os.path.join(os.path.dirname(__file__), "plugins")
+    modules = plugin.import_modules(*test_module_path)
     assert list(modules.keys()) == ["updatemyip_test"]
 
 
