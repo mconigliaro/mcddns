@@ -21,7 +21,7 @@ def parse(args=None):
         "-a",
         "--address-plugin",
         choices=address_plugins,
-        default=["ipify.ipv4"],
+        default=address_plugins,
         action="append",
         help="plugin(s) used to obtain an address (can be specified multiple times)",
     )
@@ -31,7 +31,7 @@ def parse(args=None):
         "-d",
         "--dns-plugin",
         choices=dns_plugins,
-        default="aws.route53",
+        default=dns_plugins[0],
         help="plugin used to manage DNS records",
     )
     dns_group.add_argument("--dns-rrtype", default="A", help="record type")
@@ -54,7 +54,6 @@ def parse(args=None):
         fn(parser=parser.add_argument_group(f"{name} arguments"))
 
     options = parser.parse_args(args)
-    options.address_plugin = list(set(options.address_plugin))
 
     if options.dry_run:
         log_format = "[%(levelname)s] (DRY-RUN) %(message)s"

@@ -8,6 +8,14 @@ def address(*args, **kwargs):
 
 @plugin.register_dns_plugin()
 def dns(*args, **kwargs):
+    if "options" in kwargs: # FIXME: Shouldn't options always be sent?
+        if kwargs["options"].fqdn.startswith("noop"):
+            return plugin.PLUGIN_STATUS_NOOP
+        elif kwargs["options"].dry_run:
+            return plugin.PLUGIN_STATUS_DRY_RUN
+        elif kwargs["options"].fqdn.startswith("fail"):
+            return plugin.PLUGIN_STATUS_FAILURE
+
     return plugin.PLUGIN_STATUS_SUCCESS
 
 
