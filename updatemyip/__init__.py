@@ -16,14 +16,14 @@ def main():
 def get_address(address_plugins, opts):
     # FIXME: Just using last plugin for now
     log.debug(f"Calling address plugin: {address_plugins[-1]}")
-    address = plugin.get_plugin(address_plugins[-1])(options=opts)
+    address = plugin.call_address_plugin_function(address_plugins[-1], options=opts)
     log.info(f"Got address: {address}")
     return address
 
 
 def update_dns(dns_plugin, opts, address):
     log.debug(f"Calling DNS plugin: {dns_plugin}")
-    return plugin.get_plugin(dns_plugin)(options=opts, address=address)
+    return plugin.call_dns_plugin_function(dns_plugin, options=opts, address=address)
 
 
 def exit_status(plugin_status, opts, address):

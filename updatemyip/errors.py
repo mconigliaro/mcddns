@@ -12,3 +12,11 @@ class NoSuchPluginError(PluginError):
 
 class InvalidPluginTypeError(PluginError):
     pass
+
+
+class InvalidPluginReturnTypeError(PluginError):
+    pass
+
+
+class DataValidationError(PluginError):
+    pass

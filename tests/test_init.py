@@ -5,11 +5,14 @@ import updatemyip.plugin as plugin
 
 
 def test_get_address():
-    assert umip.get_address("test.address", ap.Namespace) == "test address plugin"
+    assert umip.get_address(["test.address"], ap.Namespace) == "127.0.0.1"
 
 
 def test_update_dns():
-    assert umip.update_dns("test.dns", ap.Namespace, "127.0.0.1") == "test dns plugin"
+    assert (
+        umip.update_dns("test.dns", ap.Namespace, "127.0.0.1")
+        == plugin.PLUGIN_STATUS_SUCCESS
+    )
 
 
 @pt.mark.parametrize(

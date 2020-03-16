@@ -10,7 +10,7 @@ def options(*args, **kwargs):
     parser.add_argument("--aws-route53-hosted-zone-id", default="CHANGE_ME")
 
 
-@plugin.register_plugin(plugin.PLUGIN_TYPE_DNS)
+@plugin.register_dns_plugin()
 def route53(*args, **kwargs):
     options = kwargs["options"]
     fqdn = options.fqdn if options.fqdn.endswith(".") else f"{options.fqdn}."
@@ -42,7 +42,7 @@ def route53(*args, **kwargs):
             elif curr_ttl == options.dns_ttl and curr_records == records:
                 return plugin.PLUGIN_STATUS_NOOP
         else:
-            log.info(f"No existing DNS record: {fqdn}")
+            log.info(f"DNS record not found: {options.fqdn}")
 
         changes.append(
             {

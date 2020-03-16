@@ -6,7 +6,6 @@ Testing ideas for a better DDNS client
 
 - Extensibility via plugins
 - Plugin redundancy (i.e. if the primary fails, use a backup)
-- Use result from fastest plugin
 
 ## Running the Application
 
@@ -29,5 +28,6 @@ Use `--help` to see available options.
 
 ### To Do
 
-- Add built-in plugin tests
+- Handle data validation errors
+- Add tests for built-in plugins
 - How to deal with required plugin options?
