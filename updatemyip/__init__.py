@@ -13,9 +13,10 @@ def main():
     return exit_status(dns_result, opts, address)
 
 
-def get_address(address_plugin, opts):
-    log.debug(f"Calling address plugin: {address_plugin}")
-    address = plugin.get_plugin(address_plugin)(options=opts)
+def get_address(address_plugins, opts):
+    # FIXME: Just using last plugin for now
+    log.debug(f"Calling address plugin: {address_plugins[-1]}")
+    address = plugin.get_plugin(address_plugins[-1])(options=opts)
     log.info(f"Got address: {address}")
     return address
 

@@ -21,8 +21,9 @@ def parse(args=None):
         "-a",
         "--address-plugin",
         choices=address_plugins,
-        default="ipify.ipv4",
-        help="plugin used to obtain an address",
+        default=["ipify.ipv4"],
+        action="append",
+        help="plugin(s) used to obtain an address (can be specified multiple times)",
     )
 
     dns_group = parser.add_argument_group("dns plugin arguments")
@@ -53,6 +54,7 @@ def parse(args=None):
         fn(parser=parser.add_argument_group(f"{name} arguments"))
 
     options = parser.parse_args(args)
+    options.address_plugin = list(set(options.address_plugin))
 
     if options.dry_run:
         log_format = "[%(levelname)s] (DRY-RUN) %(message)s"
