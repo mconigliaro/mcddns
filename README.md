@@ -14,7 +14,6 @@ Work in progress towards an industrial-strength dynamic DNS client
 
 - Refactor plugin module and tests
 - Add test for address plugin redundancy
-- Add `is_hostname_private`/`is_hostname_global` and tests
 - Add tests for built-in plugins
 - How to determine default plugins?
 - How to deal with required plugin options?

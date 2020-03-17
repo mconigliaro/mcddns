@@ -2,6 +2,7 @@ import os
 import pytest as pt
 import updatemyip.errors as errors
 import updatemyip.plugin as plugin
+import updatemyip.validator as validator
 
 
 def test_import_modules():
@@ -44,7 +45,7 @@ def test_list_invalid_plugins():
 def test_get_plugin():
     p = plugin.get_plugin("test.address")
     assert p["type"] == plugin.PLUGIN_TYPE_ADDRESS
-    assert p["validator"] == plugin.is_ip_address_private
+    assert p["validator"] == validator.is_ip_address_private
     assert callable(p["function"])
 
 
@@ -59,50 +60,6 @@ def test_call_address_plugin():
 
 def test_call_dns_plugin():
     assert plugin.call_dns_plugin("test.dns") == plugin.PLUGIN_STATUS_SUCCESS
-
-
-@pt.mark.parametrize(
-    "value, result",
-    [
-        ["127.0.0.1", True],
-        ["test", False]
-    ]
-)
-def test_is_ip_address(value, result):
-    assert plugin.is_ip_address(value) == result
-
-
-@pt.mark.parametrize(
-    "value, result",
-    [
-        ["127.0.0.1", True],
-        ["1.1.1.1", False]
-    ]
-)
-def test_is_ip_address_private(value, result):
-    assert plugin.is_ip_address_private(value) == result
-
-
-@pt.mark.parametrize(
-    "value, result",
-    [
-        ["1.1.1.1", True],
-        ["127.0.0.1", False]
-    ]
-)
-def test_is_ip_address_global(value, result):
-    assert plugin.is_ip_address_global(value) == result
-
-
-@pt.mark.parametrize(
-    "value, result",
-    [
-        ["foo.bar", True],
-        ["fail!", False]
-    ]
-)
-def test_is_hostname(value, result):
-    assert plugin.is_hostname(value) == result
 
 
 def test_list_plugin_options():

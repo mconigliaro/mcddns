@@ -1,10 +1,8 @@
 import importlib as il
 import inspect as ins
-import ipaddress as ip
 import logging as log
 import os
 import pkgutil as pu
-import re
 import sys
 import updatemyip.meta as meta
 import updatemyip.errors as errors
@@ -113,38 +111,6 @@ def call_address_plugin(name, *args, **kwargs):
 
 def call_dns_plugin(name, *args, **kwargs):
     return get_plugin(name)["function"](*args, **kwargs)
-
-
-def is_ip_address(value):
-    try:
-        ip.ip_address(value)
-        return True
-    except ValueError:
-        return False
-
-
-def is_ip_address_private(value):
-    try:
-        return ip.ip_address(value).is_private
-    except ValueError:
-        return False
-
-
-def is_ip_address_global(value):
-    try:
-        return ip.ip_address(value).is_global
-    except ValueError:
-        return False
-
-
-# https://stackoverflow.com/a/2532344
-def is_hostname(value):
-    if len(value) > 255:
-        return False
-    if value[-1] == ".":
-        value = value[:-1]
-    allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
-    return all(allowed.match(x) for x in value.split("."))
 
 
 def list_plugin_options():
