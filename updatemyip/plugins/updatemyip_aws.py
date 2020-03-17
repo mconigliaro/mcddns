@@ -32,29 +32,30 @@ def route53(*args, **kwargs):
             curr_type = rrsets[0]["Type"]
             curr_records = rrsets[0]["ResourceRecords"]
             curr_address = " ".join(r["Value"] for r in curr_records)
-
+            curr_record = f"{curr_name} {curr_ttl} {curr_type} {curr_address}"
             log.info(
-                f"Current DNS record: {curr_name} {curr_ttl} {curr_type} {curr_address}"
+                f"Current DNS record: {curr_record}"
             )
 
             if curr_type != options.dns_rrtype:
-                changes.append({"Action": "DELETE", "ResourceRecordSet": rrsets[0]})
+                changes.append({
+                    "Action": "DELETE",
+                    "ResourceRecordSet": rrsets[0]
+                })
             elif curr_ttl == options.dns_ttl and curr_records == records:
                 return plugin.PLUGIN_STATUS_NOOP
         else:
             log.info(f"DNS record not found: {options.fqdn}")
 
-        changes.append(
-            {
-                "Action": "UPSERT",
-                "ResourceRecordSet": {
-                    "Name": fqdn,
-                    "Type": options.dns_rrtype,
-                    "TTL": options.dns_ttl,
-                    "ResourceRecords": records,
-                },
-            }
-        )
+        changes.append({
+            "Action": "UPSERT",
+            "ResourceRecordSet": {
+                "Name": fqdn,
+                "Type": options.dns_rrtype,
+                "TTL": options.dns_ttl,
+                "ResourceRecords": records,
+            },
+        })
 
         if options.dry_run:
             return plugin.PLUGIN_STATUS_DRY_RUN
@@ -66,5 +67,7 @@ def route53(*args, **kwargs):
             return plugin.PLUGIN_STATUS_SUCCESS
 
     except be.ClientError as e:
-        log.error(f"{e.response['Error']['Code']}: {e.response['Error']['Message']}")
+        code = e.response['Error']['Code']
+        msg = e.response['Error']['Message']
+        log.error(f"{code}: {msg}")
         return plugin.PLUGIN_STATUS_FAILURE
