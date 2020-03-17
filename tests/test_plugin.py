@@ -45,7 +45,7 @@ def test_list_invalid_plugins():
 def test_get_plugin():
     p = plugin.get_plugin("test.address")
     assert p["type"] == plugin.PLUGIN_TYPE_ADDRESS
-    assert p["validator"] == validator.ip_address_private
+    assert p["validator"] == validator.ipv4_address
     assert callable(p["function"])
 
 

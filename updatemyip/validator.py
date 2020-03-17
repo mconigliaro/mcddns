@@ -1,6 +1,5 @@
 import ipaddress as ip
 import re
-import socket as so
 
 
 def ip_address(value):
@@ -11,16 +10,16 @@ def ip_address(value):
         return False
 
 
-def ip_address_private(value):
+def ipv4_address(value):
     try:
-        return ip.ip_address(value).is_private
+        return ip.ip_address(value).version == 4
     except ValueError:
         return False
 
 
-def ip_address_global(value):
+def ipv6_address(value):
     try:
-        return ip.ip_address(value).is_global
+        return ip.ip_address(value).version == 6
     except ValueError:
         return False
 
@@ -33,23 +32,3 @@ def hostname(value):
         value = value[:-1]
     allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
     return all(allowed.match(x) for x in value.split("."))
-
-
-def hostname_private(value):
-    if hostname(value):
-        try:
-            return ip_address_private(so.gethostbyname(value))
-        except so.error:
-            return False
-    else:
-        return False
-
-
-def hostname_global(value):
-    if hostname(value):
-        try:
-            return ip_address_global(so.gethostbyname(value))
-        except so.error:
-            return False
-    else:
-        return False
