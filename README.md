@@ -41,4 +41,3 @@ FIXME: See [updatemyip/plugins](updatemyip/plugins) for now.
 ### Running Tests
 
     pytest
-
