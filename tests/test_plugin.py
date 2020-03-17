@@ -11,21 +11,6 @@ def test_import_modules():
     assert list(modules.keys()) == ["updatemyip_test"]
 
 
-def test_plugin_full_name():
-    assert plugin.plugin_full_name("test") == "_pytest.python.test"
-
-
-@pt.mark.parametrize(
-    "original, stripped",
-    [
-        ["updatemyip_test", "test"],
-        ["otherprefix_test", "otherprefix_test"]
-    ]
-)
-def test_strip_module_prefix(original, stripped):
-    assert plugin.strip_module_prefix(original) == stripped
-
-
 @pt.mark.parametrize(
     "type, plugins",
     [

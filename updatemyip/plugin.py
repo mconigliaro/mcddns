@@ -1,11 +1,11 @@
 import importlib as il
-import inspect as ins
 import logging as log
 import os
 import pkgutil as pu
 import sys
-import updatemyip.meta as meta
 import updatemyip.errors as errors
+import updatemyip.meta as meta
+import updatemyip.util as util
 
 PLUGIN_MODULE_BUILTIN_PATH = os.path.join(os.path.dirname(__file__), "plugins")
 PLUGIN_MODULE_PREFIX = f"{meta.NAME}_"
@@ -31,23 +31,10 @@ def import_modules(*paths):
     return {m: il.import_module(m) for m in modules}
 
 
-def plugin_full_name(plugin):
-    caller = ins.getmodule(ins.stack()[2][0]).__name__
-    module = strip_module_prefix(caller)
-    return f"{module}.{plugin}"
-
-
-def strip_module_prefix(name):
-    return (
-        name[len(PLUGIN_MODULE_PREFIX):]
-        if name.startswith(PLUGIN_MODULE_PREFIX)
-        else name
-    )
-
-
 def register_address_plugin(validator):
     def wrapper(function):
-        full_name = plugin_full_name(function.__name__)
+        full_name = util.function_full_name(function.__name__,
+                                            PLUGIN_MODULE_PREFIX)
         _PLUGIN_REGISTRY["plugin"][full_name] = {
             "type": PLUGIN_TYPE_ADDRESS,
             "validator": validator,
@@ -59,7 +46,8 @@ def register_address_plugin(validator):
 
 def register_dns_plugin():
     def wrapper(function):
-        full_name = plugin_full_name(function.__name__)
+        full_name = util.function_full_name(function.__name__,
+                                            PLUGIN_MODULE_PREFIX)
         _PLUGIN_REGISTRY["plugin"][full_name] = {
             "type": PLUGIN_TYPE_DNS,
             "function": function,
@@ -70,7 +58,7 @@ def register_dns_plugin():
 
 def register_plugin_options(plugin):
     def wrapper(function):
-        full_name = plugin_full_name(plugin)
+        full_name = util.function_full_name(plugin, PLUGIN_MODULE_PREFIX)
         _PLUGIN_REGISTRY["options"][full_name] = function
 
     return wrapper

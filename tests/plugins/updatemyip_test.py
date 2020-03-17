@@ -9,7 +9,7 @@ def address(*args, **kwargs):
 
 @plugin.register_dns_plugin()
 def dns(*args, **kwargs):
-    if "options" in kwargs: # FIXME: Shouldn't options always be sent?
+    if "options" in kwargs:  # FIXME: Shouldn't options always be sent?
         if kwargs["options"].fqdn.startswith("noop"):
             return plugin.PLUGIN_STATUS_NOOP
         elif kwargs["options"].dry_run:
