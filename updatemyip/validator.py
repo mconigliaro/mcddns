@@ -3,7 +3,7 @@ import re
 import socket as so
 
 
-def is_ip_address(value):
+def ip_address(value):
     try:
         ip.ip_address(value)
         return True
@@ -11,14 +11,14 @@ def is_ip_address(value):
         return False
 
 
-def is_ip_address_private(value):
+def ip_address_private(value):
     try:
         return ip.ip_address(value).is_private
     except ValueError:
         return False
 
 
-def is_ip_address_global(value):
+def ip_address_global(value):
     try:
         return ip.ip_address(value).is_global
     except ValueError:
@@ -26,7 +26,7 @@ def is_ip_address_global(value):
 
 
 # https://stackoverflow.com/a/2532344
-def is_hostname(value):
+def hostname(value):
     if len(value) > 255:
         return False
     if value[-1] == ".":
@@ -35,20 +35,20 @@ def is_hostname(value):
     return all(allowed.match(x) for x in value.split("."))
 
 
-def is_hostname_private(value):
-    if is_hostname(value):
+def hostname_private(value):
+    if hostname(value):
         try:
-            return is_ip_address_private(so.gethostbyname(value))
+            return ip_address_private(so.gethostbyname(value))
         except so.error:
             return False
     else:
         return False
 
 
-def is_hostname_global(value):
-    if is_hostname(value):
+def hostname_global(value):
+    if hostname(value):
         try:
-            return is_ip_address_global(so.gethostbyname(value))
+            return ip_address_global(so.gethostbyname(value))
         except so.error:
             return False
     else:

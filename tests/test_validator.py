@@ -9,8 +9,8 @@ import updatemyip.validator as validator
         ["test", False]
     ]
 )
-def test_is_ip_address(value, result):
-    assert validator.is_ip_address(value) == result
+def test_ip_address(value, result):
+    assert validator.ip_address(value) == result
 
 
 @pt.mark.parametrize(
@@ -20,8 +20,8 @@ def test_is_ip_address(value, result):
         ["1.1.1.1", False]
     ]
 )
-def test_is_ip_address_private(value, result):
-    assert validator.is_ip_address_private(value) == result
+def test_ip_address_private(value, result):
+    assert validator.ip_address_private(value) == result
 
 
 @pt.mark.parametrize(
@@ -31,8 +31,8 @@ def test_is_ip_address_private(value, result):
         ["127.0.0.1", False]
     ]
 )
-def test_is_ip_address_global(value, result):
-    assert validator.is_ip_address_global(value) == result
+def test_ip_address_global(value, result):
+    assert validator.ip_address_global(value) == result
 
 
 @pt.mark.parametrize(
@@ -42,8 +42,8 @@ def test_is_ip_address_global(value, result):
         ["fail!", False]
     ]
 )
-def test_is_hostname(value, result):
-    assert validator.is_hostname(value) == result
+def test_hostname(value, result):
+    assert validator.hostname(value) == result
 
 
 @pt.mark.parametrize(
@@ -53,8 +53,8 @@ def test_is_hostname(value, result):
         ["conigliaro.org", False]
     ]
 )
-def test_is_hostname_private(value, result):
-    assert validator.is_hostname_private(value) == result
+def test_hostname_private(value, result):
+    assert validator.hostname_private(value) == result
 
 
 @pt.mark.parametrize(
@@ -64,5 +64,5 @@ def test_is_hostname_private(value, result):
         ["conigliaro.org", True]
     ]
 )
-def test_is_hostname_global(value, result):
-    assert validator.is_hostname_global(value) == result
+def test_hostname_global(value, result):
+    assert validator.hostname_global(value) == result

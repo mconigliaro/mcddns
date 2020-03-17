@@ -17,7 +17,5 @@ def fibonacci_backoff(attempt, sleep=True):
         sleep = fib
         log.info(f"Retrying in {sleep}s...")
         time.sleep(sleep)
+
     return fib
-
-
-

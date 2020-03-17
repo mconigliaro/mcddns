@@ -15,6 +15,7 @@ Work in progress towards an industrial-strength dynamic DNS client
 - Refactor plugin module and tests
 - Add test for address plugin redundancy
 - Add tests for built-in plugins
+- Add ipv6 validators?
 - How to determine default plugins?
 - How to deal with required plugin options?
 

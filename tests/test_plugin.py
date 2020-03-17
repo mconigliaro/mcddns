@@ -12,7 +12,7 @@ def test_import_modules():
 
 
 def test_plugin_full_name():
-    assert plugin.plugin_full_name("test_plugin") == "_pytest.python.test_plugin"
+    assert plugin.plugin_full_name("test") == "_pytest.python.test"
 
 
 @pt.mark.parametrize(
@@ -45,7 +45,7 @@ def test_list_invalid_plugins():
 def test_get_plugin():
     p = plugin.get_plugin("test.address")
     assert p["type"] == plugin.PLUGIN_TYPE_ADDRESS
-    assert p["validator"] == validator.is_ip_address_private
+    assert p["validator"] == validator.ip_address_private
     assert callable(p["function"])
 
 

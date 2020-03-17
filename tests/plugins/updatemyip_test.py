@@ -2,7 +2,7 @@ import updatemyip.plugin as plugin
 import updatemyip.validator as validator
 
 
-@plugin.register_address_plugin(validator.is_ip_address_private)
+@plugin.register_address_plugin(validator.ip_address_private)
 def address(*args, **kwargs):
     return "127.0.0.1"
 
