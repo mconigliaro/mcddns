@@ -37,7 +37,8 @@ _PLUGIN_REGISTRY = {"plugin": {}, "options": {}}
 def import_modules(*paths):
     sys.path = list(paths) + sys.path
     modules = [
-        m.name for m in pu.iter_modules() if m.name.startswith(PLUGIN_MODULE_PREFIX)
+        m.name for m in pu.iter_modules()
+        if m.name.startswith(PLUGIN_MODULE_PREFIX)
     ]
     return {m: il.import_module(m) for m in modules}
 
@@ -50,7 +51,7 @@ def plugin_full_name(plugin):
 
 def strip_module_prefix(name):
     return (
-        name[len(PLUGIN_MODULE_PREFIX) :]
+        name[len(PLUGIN_MODULE_PREFIX):]
         if name.startswith(PLUGIN_MODULE_PREFIX)
         else name
     )
@@ -104,7 +105,7 @@ def list_plugins(type):
 def get_plugin(name):
     try:
         return _PLUGIN_REGISTRY["plugin"][name]
-    except KeyError as e:
+    except KeyError:
         raise errors.NoSuchPluginError(f"No such plugin: {name}")
 
 
@@ -129,23 +130,21 @@ def to_ip_address(value):
     try:
         return ip.ip_address(value)
     except ValueError:
-        raise errors.DataValidationError(f"Expected IP address but got: {value}")
+        raise errors.DataValidationError(f"Not an IP address: {value}")
 
 
 def is_ip_address_private(value):
     if to_ip_address(value).is_private:
         return True
     else:
-        raise errors.DataValidationError(
-            f"Expected private IP address but got: {value}"
-        )
+        raise errors.DataValidationError(f"Not a private IP address: {value}")
 
 
 def is_ip_address_global(value):
     if to_ip_address(value).is_global:
         return True
     else:
-        raise errors.DataValidationError(f"Expected global IP address but got: {value}")
+        raise errors.DataValidationError(f"Not a global IP address: {value}")
 
 
 # FIXME: Needs better validation
@@ -154,7 +153,7 @@ def is_hostname(value):
         so.gethostbyname(value)
         return True
     except so.error:
-        raise errors.DataValidationError(f"Expected hostname but got: {value}")
+        raise errors.DataValidationError(f"Not a hostname: {value}")
 
 
 def list_plugin_options():
