@@ -1,4 +1,5 @@
 import logging as log
+import updatemyip.errors as errors
 import updatemyip.options as options
 import updatemyip.plugin as plugin
 
@@ -8,10 +9,17 @@ def main(plugin_module_paths=[], args=None):
 
     opts = options.parse(args)
 
-    # FIXME: Just using last plugin for now
-    log.debug(f"Calling address plugin: {opts.address_plugin[-1]}")
-    address = plugin.call_address_plugin(opts.address_plugin[-1], options=opts)
-    log.info(f"Got address: {address}")
+    for p in opts.address_plugin:
+        log.debug(f"Calling address plugin: {p}")
+        try:
+            address = plugin.call_address_plugin(p, options=opts)
+            break
+        except errors.ValidationError as e:
+            log.warn(e)
+            next
+    else:
+        log.error(f"All address plugins failed")
+        return 1
 
     log.debug(f"Calling DNS plugin: {opts.dns_plugin}")
     dns_result = plugin.call_dns_plugin(opts.dns_plugin, options=opts,

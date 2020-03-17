@@ -1,11 +1,23 @@
 # Update My IP
 
-Testing ideas for a better DDNS client
+Work in progress towards an industrial-strength dynamic DNS client
 
-## Planned Features
+## Features
 
 - Extensibility via plugins
+- Plugin result validation
 - Plugin redundancy (i.e. if the primary fails, use a backup)
+
+### To Do
+
+- Refactor plugin module and tests
+- Add test for address plugin redundancy
+  - Better logging?
+  - Log attempt/retries?
+- Add `is_hostname_private`/`is_hostname_global` and tests
+- Add tests for built-in plugins
+- How to determine default plugins?
+- How to deal with required plugin options?
 
 ## Running the Application
 
@@ -22,12 +34,11 @@ Use `--help` to see available options.
     pipenv shell
     ...
 
+### Writing Plugins
+
+FIXME
+
 ### Running Tests
 
     pytest
 
-### To Do
-
-- Handle data validation errors
-- Add tests for built-in plugins
-- How to deal with required plugin options?

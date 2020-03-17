@@ -1,7 +1,7 @@
 import updatemyip.plugin as plugin
 
 
-@plugin.register_address_plugin(plugin.PLUGIN_RETURN_TYPE_IP_ADDRESS_PRIVATE)
+@plugin.register_address_plugin(plugin.is_ip_address_private)
 def address(*args, **kwargs):
     return "127.0.0.1"
 

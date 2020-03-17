@@ -14,9 +14,5 @@ class InvalidPluginTypeError(PluginError):
     pass
 
 
-class InvalidPluginReturnTypeError(PluginError):
-    pass
-
-
-class DataValidationError(PluginError):
+class ValidationError(PluginError):
     pass

@@ -1,9 +1,10 @@
 import importlib as il
 import inspect as ins
 import ipaddress as ip
+import logging as log
 import os
 import pkgutil as pu
-import socket as so
+import re
 import sys
 import updatemyip.meta as meta
 import updatemyip.errors as errors
@@ -14,17 +15,6 @@ PLUGIN_MODULE_PREFIX = f"{meta.NAME}_"
 PLUGIN_TYPE_ADDRESS = 0
 PLUGIN_TYPE_DNS = 1
 PLUGIN_TYPES = (PLUGIN_TYPE_ADDRESS, PLUGIN_TYPE_DNS)
-
-PLUGIN_RETURN_TYPE_IP_ADDRESS = 0
-PLUGIN_RETURN_TYPE_IP_ADDRESS_PRIVATE = 1
-PLUGIN_RETURN_TYPE_IP_ADDRESS_GLOBAL = 2
-PLUGIN_RETURN_TYPE_HOSTNAME = 3
-PLUGIN_RETURN_TYPES = (
-    PLUGIN_RETURN_TYPE_IP_ADDRESS,
-    PLUGIN_RETURN_TYPE_IP_ADDRESS_PRIVATE,
-    PLUGIN_RETURN_TYPE_IP_ADDRESS_GLOBAL,
-    PLUGIN_RETURN_TYPE_HOSTNAME,
-)
 
 PLUGIN_STATUS_NOOP = 0
 PLUGIN_STATUS_DRY_RUN = 1
@@ -57,16 +47,12 @@ def strip_module_prefix(name):
     )
 
 
-def register_address_plugin(return_type):
+def register_address_plugin(validator):
     def wrapper(function):
-        if return_type not in PLUGIN_RETURN_TYPES:
-            raise errors.InvalidPluginReturnTypeError(
-                f"Invalid plugin return type: {return_type}"
-            )
         full_name = plugin_full_name(function.__name__)
         _PLUGIN_REGISTRY["plugin"][full_name] = {
-            "plugin_type": PLUGIN_TYPE_ADDRESS,
-            "return_type": return_type,
+            "type": PLUGIN_TYPE_ADDRESS,
+            "validator": validator,
             "function": function,
         }
 
@@ -77,7 +63,7 @@ def register_dns_plugin():
     def wrapper(function):
         full_name = plugin_full_name(function.__name__)
         _PLUGIN_REGISTRY["plugin"][full_name] = {
-            "plugin_type": PLUGIN_TYPE_DNS,
+            "type": PLUGIN_TYPE_DNS,
             "function": function,
         }
 
@@ -98,7 +84,7 @@ def list_plugins(type):
     return [
         name
         for name, info in _PLUGIN_REGISTRY["plugin"].items()
-        if info["plugin_type"] == type
+        if info["type"] == type
     ]
 
 
@@ -111,49 +97,55 @@ def get_plugin(name):
 
 def call_address_plugin(name, *args, **kwargs):
     p = get_plugin(name)
-    result = p["function"](*args, **kwargs)
-    {
-        PLUGIN_RETURN_TYPE_IP_ADDRESS: to_ip_address,
-        PLUGIN_RETURN_TYPE_IP_ADDRESS_PRIVATE: is_ip_address_private,
-        PLUGIN_RETURN_TYPE_IP_ADDRESS_GLOBAL: is_ip_address_global,
-        PLUGIN_RETURN_TYPE_HOSTNAME: is_hostname,
-    }[p["return_type"]](result)
+    fn = p["function"]
+    validator_fn = p["validator"]
 
-    return result
+    address = fn(*args, **kwargs)
+    log.info(f"Got address: {address}")
+    if callable(validator_fn):
+        validator_log = f"{validator_fn.__name__}('{address})"
+        log.debug(f"Calling validator: {validator_log}")
+        if not validator_fn(address):
+            raise errors.ValidationError(
+                f"Validator failed: {validator_log}")
+
+    return address
 
 
 def call_dns_plugin(name, *args, **kwargs):
     return get_plugin(name)["function"](*args, **kwargs)
 
 
-def to_ip_address(value):
+def is_ip_address(value):
     try:
-        return ip.ip_address(value)
+        ip.ip_address(value)
+        return True
     except ValueError:
-        raise errors.DataValidationError(f"Not an IP address: {value}")
+        return False
 
 
 def is_ip_address_private(value):
-    if to_ip_address(value).is_private:
-        return True
-    else:
-        raise errors.DataValidationError(f"Not a private IP address: {value}")
+    try:
+        return ip.ip_address(value).is_private
+    except ValueError:
+        return False
 
 
 def is_ip_address_global(value):
-    if to_ip_address(value).is_global:
-        return True
-    else:
-        raise errors.DataValidationError(f"Not a global IP address: {value}")
-
-
-# FIXME: Needs better validation
-def is_hostname(value):
     try:
-        so.gethostbyname(value)
-        return True
-    except so.error:
-        raise errors.DataValidationError(f"Not a hostname: {value}")
+        return ip.ip_address(value).is_global
+    except ValueError:
+        return False
+
+
+# https://stackoverflow.com/a/2532344
+def is_hostname(value):
+    if len(value) > 255:
+        return False
+    if value[-1] == ".":
+        value = value[:-1]
+    allowed = re.compile(r"(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+    return all(allowed.match(x) for x in value.split("."))
 
 
 def list_plugin_options():
