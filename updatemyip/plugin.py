@@ -97,11 +97,10 @@ def get_plugin(name):
 
 def call_address_plugin(name, *args, **kwargs):
     p = get_plugin(name)
-    fn = p["function"]
-    validator_fn = p["validator"]
-
-    address = fn(*args, **kwargs)
+    address = p["function"](*args, **kwargs)
     log.info(f"Got address: {address}")
+
+    validator_fn = p["validator"]
     if callable(validator_fn):
         validator_log = f"{validator_fn.__name__}('{address})"
         log.debug(f"Calling validator: {validator_log}")

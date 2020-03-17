@@ -6,10 +6,10 @@ import updatemyip as umip
 @pt.mark.parametrize(
     "args, exit_code",
     [
-        [["noop.example.com"], 0],
-        [["example.com", "--dry-run"], 0],
-        [["fail.example.com"], 1],
-        [["example.com"], 0],
+        [["noop.example.com", "--no-backoff"], 0],
+        [["example.com", "--no-backoff"], 0],
+        [["fail.example.com", "--no-backoff"], 1],
+        [["example.com", "--no-backoff"], 0],
     ],
 )
 def test_main(args, exit_code):

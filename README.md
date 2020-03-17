@@ -4,16 +4,16 @@ Work in progress towards an industrial-strength dynamic DNS client
 
 ## Features
 
-- Extensibility via plugins
-- Plugin result validation
-- Plugin redundancy (i.e. if the primary fails, use a backup)
+- Infinite extensibility via plugins
+- Automatic address plugin result validation
+- Plugin redundancy with optional retry and Fibonacci backoff
+- Detailed logging
+- Dry-run mode
 
 ### To Do
 
 - Refactor plugin module and tests
 - Add test for address plugin redundancy
-  - Better logging?
-  - Log attempt/retries?
 - Add `is_hostname_private`/`is_hostname_global` and tests
 - Add tests for built-in plugins
 - How to determine default plugins?
@@ -36,7 +36,7 @@ Use `--help` to see available options.
 
 ### Writing Plugins
 
-FIXME
+FIXME: See [updatemyip/plugins](updatemyip/plugins) for now.
 
 ### Running Tests
 

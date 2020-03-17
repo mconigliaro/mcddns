@@ -1,7 +1,9 @@
+import itertools as it
 import logging as log
 import updatemyip.errors as errors
 import updatemyip.options as options
 import updatemyip.plugin as plugin
+import updatemyip.util as util
 
 
 def main(plugin_module_paths=[], args=None):
@@ -9,21 +11,32 @@ def main(plugin_module_paths=[], args=None):
 
     opts = options.parse(args)
 
-    for p in opts.address_plugin:
-        log.debug(f"Calling address plugin: {p}")
+    p_tries = opts.retry + 1
+    product = it.product(range(1, p_tries + 1), opts.address_plugin)
+    for attempt, (p_attempt, p) in enumerate(product):
+        util.fibonacci_backoff(attempt, opts.no_backoff)
+        counter = f"{p_attempt}/{p_tries}"
+        log.debug(f"[{counter}] Calling address plugin: {p}")
         try:
             address = plugin.call_address_plugin(p, options=opts)
             break
         except errors.ValidationError as e:
-            log.warn(e)
+            log.warning(e)
             next
     else:
         log.error(f"All address plugins failed")
         return 1
 
-    log.debug(f"Calling DNS plugin: {opts.dns_plugin}")
-    dns_result = plugin.call_dns_plugin(opts.dns_plugin, options=opts,
-                                        address=address)
+    for attempt in range(p_tries):
+        util.fibonacci_backoff(attempt, opts.no_backoff)
+        counter = f"{attempt + 1}/{p_tries}"
+        log.debug(f"[{counter}] Calling DNS plugin: {opts.dns_plugin}")
+        dns_result = plugin.call_dns_plugin(opts.dns_plugin, options=opts,
+                                            address=address)
+        if dns_result in (plugin.PLUGIN_STATUS_NOOP,
+                          plugin.PLUGIN_STATUS_DRY_RUN,
+                          plugin.PLUGIN_STATUS_SUCCESS):
+            break
 
     desired_record = f"{opts.fqdn} {opts.dns_ttl} {opts.dns_rrtype} {address}"
     if dns_result == plugin.PLUGIN_STATUS_NOOP:

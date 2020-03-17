@@ -69,5 +69,5 @@ def route53(*args, **kwargs):
     except be.ClientError as e:
         code = e.response['Error']['Code']
         msg = e.response['Error']['Message']
-        log.error(f"{code}: {msg}")
+        log.warning(f"{code}: {msg}")
         return plugin.PLUGIN_STATUS_FAILURE

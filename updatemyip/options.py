@@ -49,6 +49,18 @@ def parse(args=None):
         help="show what will happen without making changes",
     )
     parser.add_argument(
+        "-r",
+        "--retry",
+        type=int,
+        default=2,
+        help="number of times to retry failed plugins",
+    )
+    parser.add_argument(
+        "--no-backoff",
+        action="store_false",
+        help="disable Fibonacci backoff for failed plugins",
+    )
+    parser.add_argument(
         "-l",
         "--log-level",
         choices=("debug", "info", "warning", "error", "critical"),
