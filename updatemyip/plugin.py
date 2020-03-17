@@ -108,7 +108,7 @@ def get_plugin(name):
         raise errors.NoSuchPluginError(f"No such plugin: {name}")
 
 
-def call_address_plugin_function(name, *args, **kwargs):
+def call_address_plugin(name, *args, **kwargs):
     p = get_plugin(name)
     result = p["function"](*args, **kwargs)
     {
@@ -121,7 +121,7 @@ def call_address_plugin_function(name, *args, **kwargs):
     return result
 
 
-def call_dns_plugin_function(name, *args, **kwargs):
+def call_dns_plugin(name, *args, **kwargs):
     return get_plugin(name)["function"](*args, **kwargs)
 
 

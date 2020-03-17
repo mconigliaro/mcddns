@@ -53,12 +53,12 @@ def test_get_plugin_unknown():
         plugin.get_plugin("test.unknown")
 
 
-def test_call_address_plugin_function():
-    assert plugin.call_address_plugin_function("test.address") == "127.0.0.1"
+def test_call_address_plugin():
+    assert plugin.call_address_plugin("test.address") == "127.0.0.1"
 
 
-def test_call_dns_plugin_function():
-    assert plugin.call_dns_plugin_function("test.dns") == plugin.PLUGIN_STATUS_SUCCESS
+def test_call_dns_plugin():
+    assert plugin.call_dns_plugin("test.dns") == plugin.PLUGIN_STATUS_SUCCESS
 
 
 def test_to_ip_address():
