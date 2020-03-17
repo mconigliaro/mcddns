@@ -10,9 +10,6 @@ def parse(args=None):
     dns_plugins = plugin.list_plugins(plugin.PLUGIN_TYPE_DNS)
 
     parser = ap.ArgumentParser(epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})")
-    parser.add_argument(
-        "-v", "--version", action="version", version=f"{meta.NAME} {meta.VERSION}"
-    )
 
     parser.add_argument("fqdn", help="fully-qualified domain name")
 
@@ -23,7 +20,7 @@ def parse(args=None):
         choices=address_plugins,
         default=address_plugins,
         action="append",
-        help="plugin(s) used to obtain an address (can be specified multiple times)",
+        help="plugin(s) used to obtain an address",
     )
 
     dns_group = parser.add_argument_group("dns plugin arguments")
@@ -34,8 +31,17 @@ def parse(args=None):
         default=dns_plugins[0],
         help="plugin used to manage DNS records",
     )
-    dns_group.add_argument("--dns-rrtype", default="A", help="record type")
-    dns_group.add_argument("--dns-ttl", type=int, default=300, help="time to live")
+    dns_group.add_argument(
+        "--dns-rrtype",
+        default="A",
+        help="record type"
+    )
+    dns_group.add_argument(
+        "--dns-ttl",
+        type=int,
+        default=300,
+        help="time to live"
+    )
 
     parser.add_argument(
         "--dry-run",
@@ -48,6 +54,12 @@ def parse(args=None):
         choices=("debug", "info", "warning", "error", "critical"),
         default="info",
         help="show messages of this level or higher",
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"{meta.NAME} {meta.VERSION}"
     )
 
     for name, fn in plugin.list_plugin_options().items():
@@ -65,8 +77,8 @@ def parse(args=None):
     log.debug(f"Plugin search paths: {', '.join(sys.path)}")
     log.debug(f"Found address plugins: {', '.join(address_plugins)}")
     log.debug(f"Found DNS plugins: {', '.join(dns_plugins)}")
-    log.debug(
-        f"Options: {', '.join(f'{k}={repr(v)}' for k, v in sorted(vars(options).items()))}"
-    )
+    options_str = ', '.join(f'{k}={repr(v)}'
+                            for k, v in sorted(vars(options).items()))
+    log.debug(f"Options: {options_str}")
 
     return options

@@ -1,10 +1,13 @@
-import argparse as ap
 import pytest as pt
 import updatemyip.options as options
 
 
 @pt.mark.parametrize(
-    "args", [("foo",), ("bar", "--log-level", "debug"),],
+    "args", [
+        ["foo.example.com"],
+        ["bar.example.com", "--log-level", "debug"],
+        ["baz.example.com", "--dry-run"]
+    ],
 )
 def test_parse(args):
-    assert isinstance(options.parse(args), ap.Namespace)
+    assert options.parse(args).fqdn == args[0]

@@ -15,7 +15,7 @@ def main(plugin_module_paths=[], args=None):
 
     log.debug(f"Calling DNS plugin: {opts.dns_plugin}")
     dns_result = plugin.call_dns_plugin(opts.dns_plugin, options=opts,
-                                                         address=address)
+                                        address=address)
 
     desired_record = f"{opts.fqdn} {opts.dns_ttl} {opts.dns_rrtype} {address}"
     if dns_result == plugin.PLUGIN_STATUS_NOOP:
