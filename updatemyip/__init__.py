@@ -10,12 +10,12 @@ def main(plugin_module_paths=[], args=None):
     plugin.import_modules(*plugin_module_paths)
 
     opts = options.parse(args)
+    plugin_tries = opts.retry + 1
 
-    p_tries = opts.retry + 1
-    product = it.product(range(1, p_tries + 1), opts.address_plugin)
-    for attempt, (p_attempt, p) in enumerate(product):
+    addr_plugins = it.product(range(1, plugin_tries + 1), opts.address_plugin)
+    for attempt, (plugin_attempt, p) in enumerate(addr_plugins):
         util.fibonacci_backoff(attempt, opts.no_backoff)
-        counter = f"{p_attempt}/{p_tries}"
+        counter = f"{plugin_attempt}/{plugin_tries}"
         log.debug(f"[{counter}] Calling address plugin: {p}")
         try:
             address = plugin.call_address_plugin(p, options=opts)
@@ -27,9 +27,9 @@ def main(plugin_module_paths=[], args=None):
         log.error(f"All address plugins failed")
         return 1
 
-    for attempt in range(p_tries):
+    for attempt in range(plugin_tries):
         util.fibonacci_backoff(attempt, opts.no_backoff)
-        counter = f"{attempt + 1}/{p_tries}"
+        counter = f"{attempt + 1}/{plugin_tries}"
         log.debug(f"[{counter}] Calling DNS plugin: {opts.dns_plugin}")
         dns_result = plugin.call_dns_plugin(opts.dns_plugin, options=opts,
                                             address=address)
