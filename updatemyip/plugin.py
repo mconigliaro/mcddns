@@ -81,9 +81,9 @@ def get_plugin(name):
         raise errors.NoSuchPluginError(f"No such plugin: {name}")
 
 
-def call_address_plugin(name, *args, **kwargs):
+def call_address_plugin(name, options):
     p = get_plugin(name)
-    address = p["function"](*args, **kwargs)
+    address = p["function"](options)
     log.info(f"Got address: {address}")
 
     validator_fn = p["validator"]
@@ -97,8 +97,8 @@ def call_address_plugin(name, *args, **kwargs):
     return address
 
 
-def call_dns_plugin(name, *args, **kwargs):
-    return get_plugin(name)["function"](*args, **kwargs)
+def call_dns_plugin(name, options, address):
+    return get_plugin(name)["function"](options, address)
 
 
 def list_plugin_options():

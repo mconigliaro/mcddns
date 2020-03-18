@@ -18,7 +18,7 @@ def main(plugin_module_paths=[], args=None):
         counter = f"{plugin_attempt}/{plugin_tries}"
         log.debug(f"[{counter}] Calling address plugin: {p}")
         try:
-            address = plugin.call_address_plugin(p, options=opts)
+            address = plugin.call_address_plugin(p, opts)
             break
         except errors.ValidationError as e:
             log.warning(e)
@@ -31,8 +31,7 @@ def main(plugin_module_paths=[], args=None):
         util.fibonacci_backoff(attempt, opts.no_backoff)
         counter = f"{attempt + 1}/{plugin_tries}"
         log.debug(f"[{counter}] Calling DNS plugin: {opts.dns_plugin}")
-        dns_result = plugin.call_dns_plugin(opts.dns_plugin, options=opts,
-                                            address=address)
+        dns_result = plugin.call_dns_plugin(opts.dns_plugin, opts, address)
         if dns_result in (plugin.PLUGIN_STATUS_NOOP,
                           plugin.PLUGIN_STATUS_DRY_RUN,
                           plugin.PLUGIN_STATUS_SUCCESS):

@@ -12,7 +12,7 @@ Work in progress towards an industrial-strength dynamic DNS client
 
 ### To Do
 
-- Finalize plugin API, verify tests, etc.
+- Add docs
 - Add tests for built-in plugins?
 - How to deal with required plugin options?
 

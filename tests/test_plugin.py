@@ -1,3 +1,4 @@
+import argparse as ap
 import os
 import pytest as pt
 import updatemyip.errors as errors
@@ -49,16 +50,18 @@ def test_get_plugin_unknown():
 
 
 def test_call_address_plugin():
-    assert plugin.call_address_plugin("test.address") == "127.0.0.1"
+    args = ["test.address", ap.Namespace]
+    assert plugin.call_address_plugin(*args) == "127.0.0.1"
 
 
 def test_call_address_plugin_with_validation_error():
     with pt.raises(errors.ValidationError):
-        plugin.call_address_plugin("test.address_fail")
+        plugin.call_address_plugin("test.address_fail", ap.Namespace)
 
 
 def test_call_dns_plugin():
-    assert plugin.call_dns_plugin("test.dns") == plugin.PLUGIN_STATUS_SUCCESS
+    args = ["test.dns", ap.Namespace, "test"]
+    assert plugin.call_dns_plugin(*args) == plugin.PLUGIN_STATUS_SUCCESS
 
 
 def test_list_plugin_options():

@@ -5,16 +5,14 @@ import updatemyip.plugin as plugin
 
 
 @plugin.register_plugin_options("route53")
-def options(*args, **kwargs):
-    parser = kwargs["parser"]
+def options(parser):
     parser.add_argument("--aws-route53-hosted-zone-id", default="CHANGE_ME")
 
 
 @plugin.register_dns_plugin()
-def route53(*args, **kwargs):
-    options = kwargs["options"]
+def route53(options, address):
     fqdn = options.fqdn if options.fqdn.endswith(".") else f"{options.fqdn}."
-    records = [{"Value": kwargs["address"]}]
+    records = [{"Value": address}]
 
     try:
         client = boto3.client("route53")

@@ -76,7 +76,7 @@ def parse(args=None):
     )
 
     for name, fn in plugin.list_plugin_options().items():
-        fn(parser=parser.add_argument_group(f"{name} arguments"))
+        fn(parser.add_argument_group(f"{name} arguments"))
 
     options = parser.parse_args(args)
 
