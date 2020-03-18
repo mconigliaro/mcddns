@@ -14,5 +14,10 @@ plugin_module_paths = [
     plugin.PLUGIN_MODULE_BUILTIN_PATH,
 ]
 
-exit_code = umip.main(plugin_module_paths)
-exit(exit_code)
+dns_result = umip.main(plugin_module_paths)
+if dns_result in (plugin.PLUGIN_STATUS_NOOP,
+                  plugin.PLUGIN_STATUS_DRY_RUN,
+                  plugin.PLUGIN_STATUS_SUCCESS):
+    exit(0)
+else:
+    exit(1)
