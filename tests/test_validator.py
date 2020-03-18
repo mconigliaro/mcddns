@@ -1,3 +1,4 @@
+import itertools as it
 import pytest as pt
 import updatemyip.validator as validator
 
@@ -6,6 +7,7 @@ import updatemyip.validator as validator
     "value, result",
     [
         ["127.0.0.1", True],
+        ["::1", True],
         ["test", False]
     ]
 )
@@ -40,7 +42,8 @@ def test_ipv6_address(value, result):
 @pt.mark.parametrize(
     "value, result",
     [
-        ["foo.bar", True],
+        ["foo.bar.", True],
+        [str(it.repeat("x", 256)), False],
         ["fail!", False]
     ]
 )
