@@ -4,7 +4,7 @@ Work in progress towards an industrial-strength dynamic DNS client
 
 ## Features
 
-- Infinite extensibility via plugins
+- Extensibility via plugins
 - Automatic address plugin result validation
 - Plugin redundancy with optional retry and Fibonacci backoff
 - Detailed logging
@@ -13,16 +13,12 @@ Work in progress towards an industrial-strength dynamic DNS client
 ### To Do
 
 - Finalize plugin API, verify tests, etc.
-- Add test for address plugin redundancy
-- Add tests for built-in plugins
-- How to determine default plugins?
+- Add tests for built-in plugins?
 - How to deal with required plugin options?
 
-## Running the Application
+## Installation
 
-    updatemyip
-
-Use `--help` to see available options.
+FIXME
 
 ## Development
 
@@ -33,10 +29,16 @@ Use `--help` to see available options.
     pipenv shell
     ...
 
-### Writing Plugins
-
-FIXME: See [updatemyip/plugins](updatemyip/plugins) for now.
-
 ### Running Tests
 
     pytest
+
+## Running the Application
+
+Use `--help` to see available options.
+
+    updatemyip
+
+### Writing Plugins
+
+FIXME: See [updatemyip/plugins](updatemyip/plugins) and [tests/plugins](updatemyip/plugins) for now.

@@ -25,7 +25,7 @@ def main(plugin_module_paths=[], args=None):
             next
     else:
         log.error(f"All address plugins failed")
-        return 1
+        return plugin.PLUGIN_STATUS_FAILURE
 
     for attempt in range(plugin_tries):
         util.fibonacci_backoff(attempt, opts.no_backoff)

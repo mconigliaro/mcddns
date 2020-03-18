@@ -18,8 +18,9 @@ def parse(args=None):
         "-a",
         "--address-plugin",
         choices=address_plugins,
-        default=address_plugins,
+        default=[],
         action="append",
+        required=True,
         help="plugin(s) used to obtain an address",
     )
 
@@ -28,19 +29,19 @@ def parse(args=None):
         "-d",
         "--dns-plugin",
         choices=dns_plugins,
-        default=dns_plugins[0],
+        required=True,
         help="plugin used to manage DNS records",
     )
     dns_group.add_argument(
         "--dns-rrtype",
         default="A",
-        help="record type"
+        help="type of DNS record"
     )
     dns_group.add_argument(
         "--dns-ttl",
         type=int,
         default=300,
-        help="time to live"
+        help="time in seconds that DNS servers should cache the record"
     )
 
     parser.add_argument(

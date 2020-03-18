@@ -13,8 +13,10 @@ def test_import_modules():
 @pt.mark.parametrize(
     "type, plugins",
     [
-        [plugin.PLUGIN_TYPE_ADDRESS, ["test.address"]],
-        [plugin.PLUGIN_TYPE_DNS, ["test.dns"]]
+        [plugin.PLUGIN_TYPE_ADDRESS,
+            ["test.address", "test.address_fail"]],
+        [plugin.PLUGIN_TYPE_DNS,
+            ["test.dns", "test.dns_noop", "test.dns_dry_run", "test.dns_fail"]]
     ]
 )
 def test_list_plugins(type, plugins):
@@ -27,17 +29,17 @@ def test_list_invalid_plugins():
 
 
 @pt.mark.parametrize(
-    "name, type, val",
+    "name, type, validator_fn",
     [
         ["test.address", plugin.PLUGIN_TYPE_ADDRESS, validator.ipv4_address],
         ["test.dns", plugin.PLUGIN_TYPE_DNS, None]
     ]
 )
-def test_get_plugin(name, type, val):
+def test_get_plugin(name, type, validator_fn):
     p = plugin.get_plugin(name)
     assert p["type"] == type
-    if val:
-        assert p["validator"] == val
+    if validator_fn:
+        assert p["validator"] == validator_fn
     assert callable(p["function"])
 
 
@@ -48,6 +50,11 @@ def test_get_plugin_unknown():
 
 def test_call_address_plugin():
     assert plugin.call_address_plugin("test.address") == "127.0.0.1"
+
+
+def test_call_address_plugin_with_validation_error():
+    with pt.raises(errors.ValidationError):
+        plugin.call_address_plugin("test.address_fail")
 
 
 def test_call_dns_plugin():

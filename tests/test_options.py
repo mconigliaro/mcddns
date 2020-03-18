@@ -1,13 +1,10 @@
-import pytest as pt
 import updatemyip.options as options
 
 
-@pt.mark.parametrize(
-    "args", [
-        ["foo.example.com"],
-        ["bar.example.com", "--log-level", "debug"],
-        ["baz.example.com", "--dry-run"]
-    ],
-)
-def test_parse(args):
-    assert options.parse(args).fqdn == args[0]
+def test_parse():
+    args = ["foo.example.com", "-a", "test.address", "-d", "test.dns"]
+    opts = options.parse(args)
+
+    assert opts.fqdn == args[0]
+    assert opts.address_plugin == [args[2]]
+    assert opts.dns_plugin == args[4]
