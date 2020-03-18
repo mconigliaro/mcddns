@@ -41,4 +41,4 @@ Use `--help` to see available options.
 
 ### Writing Plugins
 
-FIXME: See [updatemyip/plugins](updatemyip/plugins) and [tests/plugins](updatemyip/plugins) for now.
+FIXME: See [updatemyip/plugins](updatemyip/plugins) and [tests/plugins](tests/plugins) for now.
