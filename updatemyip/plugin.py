@@ -23,7 +23,7 @@ _PLUGIN_REGISTRY = {"plugin": {}, "options": {}}
 
 
 def import_modules(*paths):
-    sys.path = list(paths) + sys.path
+    [sys.path.insert(0, path) for path in paths if path not in sys.path]
     modules = [
         m.name for m in pu.iter_modules()
         if m.name.startswith(PLUGIN_MODULE_PREFIX)
