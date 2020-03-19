@@ -19,6 +19,7 @@ def test_strip_prefix(original, prefix, result):
     [
         [int, None, "builtins.int"],
         [int, "built", "ins.int"],
+        [int, "otherprefix", "builtins.int"],
     ]
 )
 def test_plugin_full_name(original, prefix, result):
@@ -26,7 +27,7 @@ def test_plugin_full_name(original, prefix, result):
 
 
 @pt.mark.parametrize(
-    "n, fib",
+    "attempt, delay",
     [
         [0, 1],
         [1, 1],
@@ -40,5 +41,5 @@ def test_plugin_full_name(original, prefix, result):
         [9, 55]
     ]
 )
-def test_fibonacci_backoff(n, fib):
-    assert util.fibonacci_backoff(n, sleep=False) == fib
+def test_backoff(attempt, delay):
+    assert util.backoff(attempt, sleep=False) == delay

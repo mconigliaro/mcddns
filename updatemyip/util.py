@@ -16,7 +16,7 @@ def plugin_full_name(cls, prefix=None):
     return f"{module}.{cls.__name__}"  # FIXME: Make snake case?
 
 
-def fibonacci_backoff(attempt, sleep=True):
+def backoff(attempt, sleep=True):
     def fibonacci(n):
         if n == 0:
             return (0, 1)
@@ -26,10 +26,9 @@ def fibonacci_backoff(attempt, sleep=True):
             d = a * a + b * b
             return (c, d) if n % 2 == 0 else (d, c + d)
 
-    fib = fibonacci(attempt)[1]
-    if attempt and sleep:
-        sleep = fib
-        log.info(f"Retrying in {sleep}s...")
-        time.sleep(sleep)
+    delay = fibonacci(attempt)[1]
+    if sleep and attempt:
+        log.info(f"Retrying in {delay}s...")
+        time.sleep(delay)
 
-    return fib
+    return delay

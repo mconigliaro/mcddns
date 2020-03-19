@@ -30,7 +30,7 @@ class AddressPlugin(Plugin):
         pass
 
     def validate(self, options, address):
-        return validator.ip_address(address)
+        return validator.ipv4_address(address)
 
 
 class DNSPlugin(Plugin):
