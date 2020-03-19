@@ -1,4 +1,3 @@
-import inspect as ins
 import logging as log
 import time
 
@@ -9,11 +8,6 @@ def strip_prefix(value, prefix):
         if prefix and value.startswith(prefix)
         else value
     )
-
-
-def plugin_full_name(cls, prefix=None):
-    module = strip_prefix(ins.getmodule(cls).__name__, prefix)
-    return f"{module}.{cls.__name__}"  # FIXME: Make snake case?
 
 
 def backoff(attempt, sleep=True):

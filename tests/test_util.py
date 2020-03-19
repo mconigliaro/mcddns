@@ -15,18 +15,6 @@ def test_strip_prefix(original, prefix, result):
 
 
 @pt.mark.parametrize(
-    "original, prefix, result",
-    [
-        [int, None, "builtins.int"],
-        [int, "built", "ins.int"],
-        [int, "otherprefix", "builtins.int"],
-    ]
-)
-def test_plugin_full_name(original, prefix, result):
-    assert util.plugin_full_name(original, prefix) == result
-
-
-@pt.mark.parametrize(
     "attempt, delay",
     [
         [0, 1],

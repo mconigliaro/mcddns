@@ -10,6 +10,18 @@ def test_import_modules():
 
 
 @pt.mark.parametrize(
+    "original, prefix, result",
+    [
+        [int, None, "builtins.int"],
+        [int, "built", "ins.int"],
+        [int, "otherprefix", "builtins.int"],
+    ]
+)
+def test_plugin_full_name(original, prefix, result):
+    assert pi.plugin_full_name(original, prefix) == result
+
+
+@pt.mark.parametrize(
     "type, plugins",
     [
         [pi.AddressPlugin,
@@ -29,10 +41,10 @@ def test_list_plugins(type, plugins):
         ["test.DNS", pi.DNSPlugin]
     ]
 )
-def test_get_plugin(name, base_type):
-    assert base_type in pi.get_plugin(name).__bases__
+def test_init_plugin(name, base_type):
+    assert base_type in pi.init_plugin(name).__class__.__bases__
 
 
-def test_get_plugin_unknown():
+def test_init_plugin_unknown():
     with pt.raises(err.NoSuchPluginError):
-        pi.get_plugin("test.unknown")
+        pi.init_plugin("test.unknown")

@@ -8,7 +8,3 @@ class PluginError(UpdateMyIpError):
 
 class NoSuchPluginError(PluginError):
     pass
-
-
-class ValidationError(PluginError):
-    pass

@@ -1,5 +1,7 @@
 import abc
 import importlib as il
+import inspect as ins
+import logging as log
 import os
 import pkgutil as pu
 import sys
@@ -18,6 +20,11 @@ PLUGIN_STATUS_FAILURE = 3
 
 
 class Plugin(abc.ABC):
+
+    def call(self, method, *args, **kwargs):
+        obj_name = plugin_full_name(self.__class__, PLUGIN_MODULE_PREFIX)
+        log.debug(f"Calling plugin method: {obj_name}.{method}()")
+        return getattr(self, method)(*args, **kwargs)
 
     def options(self, parser):
         pass
@@ -45,7 +52,7 @@ class DNSPlugin(Plugin):
 
 
 def import_modules(*paths):
-    [sys.path.insert(0, path) for path in paths if path not in sys.path]
+    sys.path = list(paths) + sys.path
     modules = [
         m.name for m in pu.iter_modules()
         if m.name.startswith(PLUGIN_MODULE_PREFIX)
@@ -53,18 +60,23 @@ def import_modules(*paths):
     return {m: il.import_module(m) for m in modules}
 
 
+def plugin_full_name(obj, prefix=None):
+    module = util.strip_prefix(ins.getmodule(obj).__name__, prefix)
+    return f"{module}.{obj.__name__}"
+
+
 def list_plugins(*types):
     if not types:
         types = [AddressPlugin, DNSPlugin]
 
     return {
-        f"{util.plugin_full_name(c, PLUGIN_MODULE_PREFIX)}": c
-        for c in sum([type.__subclasses__() for type in types], [])
+        f"{plugin_full_name(cls, PLUGIN_MODULE_PREFIX)}": cls
+        for cls in sum([type.__subclasses__() for type in types], [])
     }
 
 
-def get_plugin(name):
+def init_plugin(name, *args, **kwargs):
     try:
-        return list_plugins()[name]
+        return list_plugins()[name](*args, **kwargs)
     except KeyError:
         raise err.NoSuchPluginError(f"No such plugin: {name}")

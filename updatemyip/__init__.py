@@ -1,6 +1,5 @@
 import itertools as it
 import logging as log
-import updatemyip.errors as err
 import updatemyip.options as opt
 import updatemyip.plugin as pi
 import updatemyip.util as util
@@ -10,32 +9,30 @@ def main(plugin_module_paths=[], args=None):
     pi.import_modules(*plugin_module_paths)
 
     opts = opt.parse(args)
-    plugin_tries = opts.retry + 1
 
-    addr_plugins = it.product(range(1, plugin_tries + 1), opts.address_plugin)
-    for attempt, (plugin_attempt, p) in enumerate(addr_plugins):
+    plugins = {p: pi.init_plugin(p) for p in opts.address_plugin}
+    cycle = it.product(range(opts.retry + 1), plugins.keys(), plugins.values())
+    for attempt, (plugin_attempt, plugin_name, plugin) in enumerate(cycle):
         util.backoff(attempt, opts.no_backoff)
-        counter = f"{plugin_attempt}/{plugin_tries}"
-        log.debug(f"[{counter}] Calling address plugin: {p}")
-        try:
-            address = pi.get_plugin(p)().fetch(opts)
-            log.info(f"Got address: {address}")
-            log.debug(f"Validating address: {address}")
-            if not pi.get_plugin(p)().validate(opts, address):
-                raise err.ValidationError(f"Address validation failed")
+        counter = f"{plugin_attempt + 1}/{opts.retry + 1}"
+        log.debug(f"[{counter}] Trying address plugin: {plugin_name}")
+        address = plugin.call("fetch", opts)
+        if plugin.call("validate", opts, address):
             break
-        except err.ValidationError as e:
-            log.warning(e)
+        else:
             next
     else:
         log.error(f"All address plugins failed")
         return pi.PLUGIN_STATUS_FAILURE
 
-    for attempt in range(plugin_tries):
+    log.info(f"Got address: {address}")
+
+    plugin = pi.init_plugin(opts.dns_plugin)
+    for attempt in range(opts.retry + 1):
         util.backoff(attempt, opts.no_backoff)
-        counter = f"{attempt + 1}/{plugin_tries}"
-        log.debug(f"[{counter}] Calling DNS plugin: {opts.dns_plugin}")
-        dns_result = pi.get_plugin(opts.dns_plugin)().update(opts, address)
+        counter = f"{attempt + 1}/{opts.retry + 1}"
+        log.debug(f"[{counter}] Trying DNS plugin: {opts.dns_plugin}")
+        dns_result = plugin.call("update", opts, address)
         if dns_result in (pi.PLUGIN_STATUS_NOOP,
                           pi.PLUGIN_STATUS_DRY_RUN,
                           pi.PLUGIN_STATUS_SUCCESS):
