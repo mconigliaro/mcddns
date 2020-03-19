@@ -5,7 +5,7 @@ Work in progress towards an industrial-strength dynamic DNS client
 ## Features
 
 - Extensibility via plugins
-- Automatic address plugin result validation
+- Built-in address plugin result validation
 - Plugin redundancy with optional retry and Fibonacci backoff
 - Detailed logging
 - Dry-run mode

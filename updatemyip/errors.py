@@ -10,9 +10,5 @@ class NoSuchPluginError(PluginError):
     pass
 
 
-class InvalidPluginTypeError(PluginError):
-    pass
-
-
 class ValidationError(PluginError):
     pass

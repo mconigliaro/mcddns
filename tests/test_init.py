@@ -8,31 +8,31 @@ import updatemyip.plugin as plugin
     "args, exit_code",
     [
         [
-            ["test", "-a", "test.address", "-d", "test.dns_noop"],
+            ["test", "-a", "test.Address", "-d", "test.DNSNoOp"],
             plugin.PLUGIN_STATUS_NOOP
         ],
         [
-            ["test", "-a", "test.address", "-d", "test.dns_dry_run",
+            ["test", "-a", "test.Address", "-d", "test.DNSDryRun",
              "--dry-run"],
             plugin.PLUGIN_STATUS_DRY_RUN
         ],
         [
-            ["test", "-a", "test.address_fail", "-d", "test.dns",
+            ["test", "-a", "test.AddressFail", "-d", "test.DNS",
              "--no-backoff"],
             plugin.PLUGIN_STATUS_FAILURE
         ],
         [
-            ["test", "-a", "test.address_fail", "-a", "test.address",
-             "-d", "test.dns", "--no-backoff"],
+            ["test", "-a", "test.AddressFail", "-a", "test.Address",
+             "-d", "test.DNS", "--no-backoff"],
             plugin.PLUGIN_STATUS_SUCCESS
         ],
         [
-            ["test", "-a", "test.address", "-d", "test.dns_fail",
+            ["test", "-a", "test.Address", "-d", "test.DNSFail",
              "--no-backoff"],
             plugin.PLUGIN_STATUS_FAILURE
         ],
         [
-            ["test", "-a", "test.address", "-d", "test.dns"],
+            ["test", "-a", "test.Address", "-d", "test.DNS"],
             plugin.PLUGIN_STATUS_SUCCESS
         ]
     ]

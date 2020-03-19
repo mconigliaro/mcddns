@@ -6,8 +6,8 @@ import updatemyip.plugin as plugin
 
 
 def parse(args=None):
-    address_plugins = plugin.list_plugins(plugin.PLUGIN_TYPE_ADDRESS)
-    dns_plugins = plugin.list_plugins(plugin.PLUGIN_TYPE_DNS)
+    address_plugins = plugin.list_plugins(plugin.AddressPlugin).keys()
+    dns_plugins = plugin.list_plugins(plugin.DNSPlugin).keys()
 
     parser = ap.ArgumentParser(epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})")
 
@@ -75,8 +75,8 @@ def parse(args=None):
         version=f"{meta.NAME} {meta.VERSION}"
     )
 
-    for name, fn in plugin.list_plugin_options().items():
-        fn(parser.add_argument_group(f"{name} arguments"))
+    for name, cls in plugin.list_plugins().items():
+        cls().options(parser.add_argument_group(f"{name} arguments"))
 
     options = parser.parse_args(args)
 

@@ -2,7 +2,7 @@ import updatemyip.options as options
 
 
 def test_parse():
-    args = ["foo.example.com", "-a", "test.address", "-d", "test.dns"]
+    args = ["foo.example.com", "-a", "test.Address", "-d", "test.DNS"]
     opts = options.parse(args)
 
     assert opts.fqdn == args[0]

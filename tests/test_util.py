@@ -15,15 +15,14 @@ def test_strip_prefix(original, prefix, result):
 
 
 @pt.mark.parametrize(
-    "function, prefix, result",
+    "original, prefix, result",
     [
-        ["foo", None, "_pytest.python.foo"],
-        ["foo", "_pytest.", "python.foo"],
-        ["bar", "otherprefix", "_pytest.python.bar"]
+        [int, None, "builtins.int"],
+        [int, "built", "ins.int"],
     ]
 )
-def test_function_full_name(function, prefix, result):
-    assert util.function_full_name(function, prefix) == result
+def test_plugin_full_name(original, prefix, result):
+    assert util.plugin_full_name(original, prefix) == result
 
 
 @pt.mark.parametrize(

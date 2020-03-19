@@ -1,9 +1,7 @@
-import argparse as ap
 import os
 import pytest as pt
 import updatemyip.errors as errors
 import updatemyip.plugin as plugin
-import updatemyip.validator as validator
 
 
 def test_import_modules():
@@ -14,55 +12,27 @@ def test_import_modules():
 @pt.mark.parametrize(
     "type, plugins",
     [
-        [plugin.PLUGIN_TYPE_ADDRESS,
-            ["test.address", "test.address_fail"]],
-        [plugin.PLUGIN_TYPE_DNS,
-            ["test.dns", "test.dns_noop", "test.dns_dry_run", "test.dns_fail"]]
+        [plugin.AddressPlugin,
+            ["test.Address", "test.AddressFail"]],
+        [plugin.DNSPlugin,
+            ["test.DNS", "test.DNSNoOp", "test.DNSDryRun", "test.DNSFail"]]
     ]
 )
 def test_list_plugins(type, plugins):
-    assert plugin.list_plugins(type) == plugins
-
-
-def test_list_invalid_plugins():
-    with pt.raises(errors.InvalidPluginTypeError):
-        plugin.list_plugins(-1)
+    assert list(plugin.list_plugins(type).keys()) == plugins
 
 
 @pt.mark.parametrize(
-    "name, type, validator_fn",
+    "name, base_type",
     [
-        ["test.address", plugin.PLUGIN_TYPE_ADDRESS, validator.ipv4_address],
-        ["test.dns", plugin.PLUGIN_TYPE_DNS, None]
+        ["test.Address", plugin.AddressPlugin],
+        ["test.DNS", plugin.DNSPlugin]
     ]
 )
-def test_get_plugin(name, type, validator_fn):
-    p = plugin.get_plugin(name)
-    assert p["type"] == type
-    if validator_fn:
-        assert p["validator"] == validator_fn
-    assert callable(p["function"])
+def test_get_plugin(name, base_type):
+    assert base_type in plugin.get_plugin(name).__bases__
 
 
 def test_get_plugin_unknown():
     with pt.raises(errors.NoSuchPluginError):
         plugin.get_plugin("test.unknown")
-
-
-def test_call_address_plugin():
-    args = ["test.address", ap.Namespace]
-    assert plugin.call_address_plugin(*args) == "127.0.0.1"
-
-
-def test_call_address_plugin_with_validation_error():
-    with pt.raises(errors.ValidationError):
-        plugin.call_address_plugin("test.address_fail", ap.Namespace)
-
-
-def test_call_dns_plugin():
-    args = ["test.dns", ap.Namespace, "test"]
-    assert plugin.call_dns_plugin(*args) == plugin.PLUGIN_STATUS_SUCCESS
-
-
-def test_list_plugin_options():
-    assert list(plugin.list_plugin_options().keys()) == ["test.dns"]
