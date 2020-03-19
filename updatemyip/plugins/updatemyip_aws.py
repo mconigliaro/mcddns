@@ -1,14 +1,18 @@
 import boto3
 import botocore.exceptions as be
 import logging as log
-import updatemyip.plugin as plugin
+import updatemyip.plugin as pi
 
 
-class Route53(plugin.DNSPlugin):
+class Route53(pi.DNSPlugin):
 
     def options(self, parser):
         parser.add_argument("--aws-route53-hosted-zone-id",
                             default="CHANGE_ME")
+
+    # FIXME: Implement
+    def check(self, options, address):
+        return True
 
     def update(self, options, address):
         if options.fqdn.endswith("."):
@@ -44,7 +48,7 @@ class Route53(plugin.DNSPlugin):
                         "ResourceRecordSet": rrsets[0]
                     })
                 elif cur_ttl == options.dns_ttl and cur_records == records:
-                    return plugin.PLUGIN_STATUS_NOOP
+                    return pi.PLUGIN_STATUS_NOOP
             else:
                 log.info(f"DNS record not found: {options.fqdn}")
 
@@ -59,16 +63,16 @@ class Route53(plugin.DNSPlugin):
             })
 
             if options.dry_run:
-                return plugin.PLUGIN_STATUS_DRY_RUN
+                return pi.PLUGIN_STATUS_DRY_RUN
             else:
                 client.change_resource_record_sets(
                     HostedZoneId=options.aws_route53_hosted_zone_id,
                     ChangeBatch={"Changes": changes},
                 )
-                return plugin.PLUGIN_STATUS_SUCCESS
+                return pi.PLUGIN_STATUS_SUCCESS
 
         except be.ClientError as e:
             code = e.response['Error']['Code']
             msg = e.response['Error']['Message']
             log.warning(f"{code}: {msg}")
-            return plugin.PLUGIN_STATUS_FAILURE
+            return pi.PLUGIN_STATUS_FAILURE

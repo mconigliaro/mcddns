@@ -3,21 +3,21 @@
 import os
 import updatemyip as umip
 import updatemyip.meta as meta
-import updatemyip.plugin as plugin
+import updatemyip.plugin as pi
 
 xdg_config_home = os.getenv(
     "XDG_CONFIG_HOME", os.path.join(os.getenv("HOME"), ".config")
 )
-plugin_module_paths = [
+pi_module_paths = [
     os.path.join(xdg_config_home, meta.NAME, "plugins",),
     os.path.join(os.sep, "etc", meta.NAME, "plugins"),
-    plugin.PLUGIN_MODULE_BUILTIN_PATH,
+    pi.PLUGIN_MODULE_BUILTIN_PATH,
 ]
 
-result = umip.main(plugin_module_paths)
-if result in (plugin.PLUGIN_STATUS_NOOP,
-              plugin.PLUGIN_STATUS_DRY_RUN,
-              plugin.PLUGIN_STATUS_SUCCESS):
+result = umip.main(pi_module_paths)
+if result in (pi.PLUGIN_STATUS_NOOP,
+              pi.PLUGIN_STATUS_DRY_RUN,
+              pi.PLUGIN_STATUS_SUCCESS):
     exit(0)
 else:
     exit(1)

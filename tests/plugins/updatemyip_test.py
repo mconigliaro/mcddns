@@ -25,11 +25,17 @@ class DNS(plugin.DNSPlugin):
     def options(self, parser):
         return "test dns options"
 
+    def check(self, options, address):
+        return True
+
     def update(self, options, address):
         return plugin.PLUGIN_STATUS_SUCCESS
 
 
 class DNSNoOp(plugin.DNSPlugin):
+
+    def check(self, options, address):
+        return False
 
     def update(self, options, address):
         return plugin.PLUGIN_STATUS_NOOP
@@ -37,11 +43,17 @@ class DNSNoOp(plugin.DNSPlugin):
 
 class DNSDryRun(plugin.DNSPlugin):
 
+    def check(self, options, address):
+        return True
+
     def update(self, options, address):
         return plugin.PLUGIN_STATUS_DRY_RUN
 
 
 class DNSFail(plugin.DNSPlugin):
+
+    def check(self, options, address):
+        return True
 
     def update(self, options, address):
         return plugin.PLUGIN_STATUS_FAILURE

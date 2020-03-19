@@ -1,6 +1,6 @@
 import itertools as it
 import pytest as pt
-import updatemyip.validator as validator
+import updatemyip.validator as val
 
 
 @pt.mark.parametrize(
@@ -12,7 +12,7 @@ import updatemyip.validator as validator
     ]
 )
 def test_ip_address(value, result):
-    assert validator.ip_address(value) == result
+    assert val.ip_address(value) == result
 
 
 @pt.mark.parametrize(
@@ -24,7 +24,7 @@ def test_ip_address(value, result):
     ]
 )
 def test_ipv4_address(value, result):
-    assert validator.ipv4_address(value) == result
+    assert val.ipv4_address(value) == result
 
 
 @pt.mark.parametrize(
@@ -36,7 +36,7 @@ def test_ipv4_address(value, result):
     ]
 )
 def test_ipv6_address(value, result):
-    assert validator.ipv6_address(value) == result
+    assert val.ipv6_address(value) == result
 
 
 @pt.mark.parametrize(
@@ -48,4 +48,4 @@ def test_ipv6_address(value, result):
     ]
 )
 def test_hostname(value, result):
-    assert validator.hostname(value) == result
+    assert val.hostname(value) == result

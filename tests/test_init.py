@@ -1,7 +1,7 @@
 import pytest as pt
 import os
 import updatemyip as umip
-import updatemyip.plugin as plugin
+import updatemyip.plugin as pi
 
 
 @pt.mark.parametrize(
@@ -9,31 +9,31 @@ import updatemyip.plugin as plugin
     [
         [
             ["test", "-a", "test.Address", "-d", "test.DNSNoOp"],
-            plugin.PLUGIN_STATUS_NOOP
+            pi.PLUGIN_STATUS_NOOP
         ],
         [
             ["test", "-a", "test.Address", "-d", "test.DNSDryRun",
              "--dry-run"],
-            plugin.PLUGIN_STATUS_DRY_RUN
+            pi.PLUGIN_STATUS_DRY_RUN
         ],
         [
             ["test", "-a", "test.AddressFail", "-d", "test.DNS",
              "--no-backoff"],
-            plugin.PLUGIN_STATUS_FAILURE
+            pi.PLUGIN_STATUS_FAILURE
         ],
         [
             ["test", "-a", "test.AddressFail", "-a", "test.Address",
              "-d", "test.DNS", "--no-backoff"],
-            plugin.PLUGIN_STATUS_SUCCESS
+            pi.PLUGIN_STATUS_SUCCESS
         ],
         [
             ["test", "-a", "test.Address", "-d", "test.DNSFail",
              "--no-backoff"],
-            plugin.PLUGIN_STATUS_FAILURE
+            pi.PLUGIN_STATUS_FAILURE
         ],
         [
             ["test", "-a", "test.Address", "-d", "test.DNS"],
-            plugin.PLUGIN_STATUS_SUCCESS
+            pi.PLUGIN_STATUS_SUCCESS
         ]
     ]
 )

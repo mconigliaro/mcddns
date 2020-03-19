@@ -1,9 +1,9 @@
-import updatemyip.options as options
+import updatemyip.options as opt
 
 
 def test_parse():
     args = ["foo.example.com", "-a", "test.Address", "-d", "test.DNS"]
-    opts = options.parse(args)
+    opts = opt.parse(args)
 
     assert opts.fqdn == args[0]
     assert opts.address_plugin == [args[2]]

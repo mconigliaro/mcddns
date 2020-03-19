@@ -2,12 +2,12 @@ import argparse as ap
 import logging as log
 import sys
 import updatemyip.meta as meta
-import updatemyip.plugin as plugin
+import updatemyip.plugin as pi
 
 
 def parse(args=None):
-    address_plugins = plugin.list_plugins(plugin.AddressPlugin).keys()
-    dns_plugins = plugin.list_plugins(plugin.DNSPlugin).keys()
+    address_plugins = pi.list_plugins(pi.AddressPlugin).keys()
+    dns_plugins = pi.list_plugins(pi.DNSPlugin).keys()
 
     parser = ap.ArgumentParser(epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})")
 
@@ -75,7 +75,7 @@ def parse(args=None):
         version=f"{meta.NAME} {meta.VERSION}"
     )
 
-    for name, cls in plugin.list_plugins().items():
+    for name, cls in pi.list_plugins().items():
         cls().options(parser.add_argument_group(f"{name} arguments"))
 
     options = parser.parse_args(args)

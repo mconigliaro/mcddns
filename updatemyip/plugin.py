@@ -3,10 +3,10 @@ import importlib as il
 import os
 import pkgutil as pu
 import sys
-import updatemyip.errors as errors
+import updatemyip.errors as err
 import updatemyip.meta as meta
 import updatemyip.util as util
-import updatemyip.validator as validator
+import updatemyip.validator as val
 
 PLUGIN_MODULE_BUILTIN_PATH = os.path.join(os.path.dirname(__file__), "plugins")
 PLUGIN_MODULE_PREFIX = f"{meta.NAME}_"
@@ -30,15 +30,14 @@ class AddressPlugin(Plugin):
         pass
 
     def validate(self, options, address):
-        return validator.ipv4_address(address)
+        return val.ipv4_address(address)
 
 
 class DNSPlugin(Plugin):
 
-    # FIXME: Implement
-    # @abc.abstractmethod
-    # def check(self, options, address):
-    #     pass
+    @abc.abstractmethod
+    def check(self, options, address):
+        pass
 
     @abc.abstractmethod
     def update(self, options, address):
@@ -68,4 +67,4 @@ def get_plugin(name):
     try:
         return list_plugins()[name]
     except KeyError:
-        raise errors.NoSuchPluginError(f"No such plugin: {name}")
+        raise err.NoSuchPluginError(f"No such plugin: {name}")
