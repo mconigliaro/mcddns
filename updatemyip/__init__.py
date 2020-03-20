@@ -17,7 +17,7 @@ def main(plugin_module_paths=[], args=None):
 
     opts = opt.parse(args)
 
-    address_plugins = {p: pi.init_plugin(p) for p in opts.address_plugin}
+    address_plugins = {p: pi.init_plugin(p) for p in opts.address_plugins}
     plugins = it.product(range(opts.retry + 1), address_plugins.items())
     for attempt, (plugin_attempt, (plugin_name, plugin)) in enumerate(plugins):
         util.backoff(attempt, opts.no_backoff)
@@ -32,7 +32,7 @@ def main(plugin_module_paths=[], args=None):
         except Exception as e:
             log.exception(e)
     else:
-        log.error(f"All address plugins failed")
+        log.critical(f"All address plugins failed")
         return RETURN_CODE_ERROR_ADDRESS
 
     log.info(f"Got address: {address}")
@@ -62,5 +62,5 @@ def main(plugin_module_paths=[], args=None):
         except Exception as e:
             log.exception(e)
     else:
-        log.error(f"DNS plugin failed")
+        log.critical(f"DNS plugin failed")
         return RETURN_CODE_ERROR_DNS

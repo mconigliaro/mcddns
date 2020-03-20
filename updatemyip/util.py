@@ -10,7 +10,7 @@ def strip_prefix(value, prefix):
     )
 
 
-def backoff(attempt, sleep=True):
+def backoff(attempt, no_delay=False):
     def fibonacci(n):
         if n == 0:
             return (0, 1)
@@ -21,7 +21,7 @@ def backoff(attempt, sleep=True):
             return (c, d) if n % 2 == 0 else (d, c + d)
 
     delay = fibonacci(attempt)[1]
-    if sleep and attempt:
+    if not no_delay and attempt:
         log.info(f"Retrying in {delay}s...")
         time.sleep(delay)
 

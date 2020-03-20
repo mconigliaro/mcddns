@@ -9,19 +9,57 @@ def parse(args=None):
     address_plugins = sorted(pi.list_plugins(pi.AddressPlugin).keys())
     dns_plugins = sorted(pi.list_plugins(pi.DNSPlugin).keys())
 
-    parser = ap.ArgumentParser(epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})")
+    parser = ap.ArgumentParser(
+        epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})",
+        formatter_class=ap.ArgumentDefaultsHelpFormatter
+    )
 
     parser.add_argument("fqdn", help="fully-qualified domain name")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="show what will happen without making changes"
+    )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=10,
+        help="timeout for network requests"
+    )
+    parser.add_argument(
+        "--retry",
+        type=int,
+        default=2,
+        help="number of times to retry failed plugins"
+    )
+    parser.add_argument(
+        "--no-backoff",
+        action="store_true",
+        help="disable Fibonacci backoff for failed plugins"
+    )
+    parser.add_argument(
+        "-l",
+        "--log-level",
+        choices=("debug", "info", "warning", "error", "critical"),
+        default="info",
+        help="show messages of this level or higher"
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"{meta.NAME} {meta.VERSION}"
+    )
 
     address_group = parser.add_argument_group("address plugin arguments")
     address_group.add_argument(
         "-a",
-        "--address-plugin",
+        "--address-plugins",
         choices=address_plugins,
         default=[],
         action="append",
         required=True,
-        help="plugin(s) used to obtain an address",
+        help="plugin(s) used to obtain an address"
     )
 
     dns_group = parser.add_argument_group("dns plugin arguments")
@@ -30,7 +68,7 @@ def parse(args=None):
         "--dns-plugin",
         choices=dns_plugins,
         required=True,
-        help="plugin used to manage DNS records",
+        help="plugin used to manage DNS records"
     )
     dns_group.add_argument(
         "--dns-rrtype",
@@ -41,43 +79,7 @@ def parse(args=None):
         "--dns-ttl",
         type=int,
         default=300,
-        help="time in seconds that DNS servers should cache the record"
-    )
-
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="show what will happen without making changes",
-    )
-    parser.add_argument(
-        "--timeout",
-        type=float,
-        default=10,
-        help="timeout for network requests",
-    )
-    parser.add_argument(
-        "--retry",
-        type=int,
-        default=2,
-        help="number of times to retry failed plugins",
-    )
-    parser.add_argument(
-        "--no-backoff",
-        action="store_false",
-        help="disable Fibonacci backoff for failed plugins",
-    )
-    parser.add_argument(
-        "-l",
-        "--log-level",
-        choices=("debug", "info", "warning", "error", "critical"),
-        default="info",
-        help="show messages of this level or higher",
-    )
-    parser.add_argument(
-        "-v",
-        "--version",
-        action="version",
-        version=f"{meta.NAME} {meta.VERSION}"
+        help="time in seconds for DNS servers to cache the record"
     )
 
     for name, cls in pi.list_plugins().items():

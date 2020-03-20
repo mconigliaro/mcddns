@@ -6,5 +6,5 @@ def test_parse():
     opts = opt.parse(args)
 
     assert opts.fqdn == args[0]
-    assert opts.address_plugin == [args[2]]
+    assert opts.address_plugins == [args[2]]
     assert opts.dns_plugin == args[4]

@@ -30,4 +30,4 @@ def test_strip_prefix(original, prefix, result):
     ]
 )
 def test_backoff(attempt, delay):
-    assert util.backoff(attempt, sleep=False) == delay
+    assert util.backoff(attempt, no_delay=True) == delay

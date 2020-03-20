@@ -9,7 +9,7 @@ def ip_address(value):
         log.debug(f"Valid IP address: {value}")
         return True
     except ValueError:
-        log.warning(f"Invalid IP address: {value}")
+        log.error(f"Invalid IP address: {value}")
         return False
 
 
@@ -21,7 +21,7 @@ def ipv4_address(value):
         else:
             return False
     except ValueError:
-        log.warning(f"Invalid IPv4 address: {value}")
+        log.error(f"Invalid IPv4 address: {value}")
         return False
 
 
@@ -33,7 +33,7 @@ def ipv6_address(value):
         else:
             return False
     except ValueError:
-        log.warning(f"Invalid IPv6 address: {value}")
+        log.error(f"Invalid IPv6 address: {value}")
         return False
 
 
@@ -49,5 +49,5 @@ def hostname(value):
     if result:
         log.debug(f"Valid hostname: {value}")
     else:
-        log.warning(f"Invalid hostname: {value}")
+        log.error(f"Invalid hostname: {value}")
     return result
