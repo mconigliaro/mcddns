@@ -1,11 +1,11 @@
 # Update My IP
 
-Work in progress towards an industrial-strength dynamic DNS client
+Industrial-strength dynamic DNS client
 
 ## Features
 
 - Extensibility via plugins
-- Built-in address plugin result validation
+- Built-in plugin result validation
 - Plugin redundancy with optional retry and Fibonacci backoff
 - Detailed logging
 - Dry-run mode

@@ -1,4 +1,5 @@
 import boto3
+import botocore.client as bc
 import botocore.exceptions as be
 import logging as log
 import updatemyip.errors as err
@@ -21,12 +22,17 @@ class Route53(pi.DNSPlugin):
         self.changes = []
 
         try:
-            self.client = boto3.client("route53")
+            config = bc.Config(connect_timeout=options.timeout,
+                               retries={'max_attempts': 0})
+            self.client = boto3.client("route53", config=config)
             rrsets = self.client.list_resource_record_sets(
                 HostedZoneId=options.aws_route53_hosted_zone_id,
                 StartRecordName=fqdn,
                 MaxItems="1",
             )["ResourceRecordSets"]
+
+        except be.ConnectionError as e:
+            raise err.PluginError(e)
 
         except be.ClientError as e:
             code = e.response['Error']['Code']
@@ -72,6 +78,9 @@ class Route53(pi.DNSPlugin):
                 HostedZoneId=options.aws_route53_hosted_zone_id,
                 ChangeBatch={"Changes": self.changes},
             )
+
+        except be.ConnectionError as e:
+            raise err.PluginError(e)
 
         except be.ClientError as e:
             code = e.response['Error']['Code']

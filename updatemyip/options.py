@@ -6,8 +6,8 @@ import updatemyip.plugin as pi
 
 
 def parse(args=None):
-    address_plugins = pi.list_plugins(pi.AddressPlugin).keys()
-    dns_plugins = pi.list_plugins(pi.DNSPlugin).keys()
+    address_plugins = sorted(pi.list_plugins(pi.AddressPlugin).keys())
+    dns_plugins = sorted(pi.list_plugins(pi.DNSPlugin).keys())
 
     parser = ap.ArgumentParser(epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})")
 
@@ -50,7 +50,12 @@ def parse(args=None):
         help="show what will happen without making changes",
     )
     parser.add_argument(
-        "-r",
+        "--timeout",
+        type=float,
+        default=10,
+        help="timeout for network requests",
+    )
+    parser.add_argument(
         "--retry",
         type=int,
         default=2,
