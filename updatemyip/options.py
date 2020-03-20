@@ -83,9 +83,15 @@ def parse(args=None):
     )
 
     for name, cls in pi.list_plugins().items():
-        cls().options(parser.add_argument_group(f"{name} arguments"))
+        cls().options_pre(parser.add_argument_group(f"{name} arguments"))
 
     options = parser.parse_args(args)
+
+    used_plugins = options.address_plugins + [options.dns_plugin]
+    post_parsers = [cls for name, cls in pi.list_plugins().items()
+                    if name in used_plugins]
+    for cls in post_parsers:
+        cls().options_post(parser, options)
 
     if options.dry_run:
         log_format = "[%(levelname)s] (DRY-RUN) %(message)s"

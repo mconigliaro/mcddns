@@ -8,9 +8,16 @@ import updatemyip.plugin as pi
 
 class Route53(pi.DNSPlugin):
 
-    def options(self, parser):
-        parser.add_argument("--aws-route53-hosted-zone-id",
-                            default="CHANGE_ME")
+    def options_pre(self, parser):
+        parser.add_argument("--aws-route53-hosted-zone-id")
+
+    def options_post(self, parser, options):
+        required = ["aws_route53_hosted_zone_id"]
+        missing = ", ".join(f"--{opt.replace('_', '-')}"
+                            for opt in required
+                            if not getattr(options, opt))
+        if missing:
+            parser.error(f"Missing required aws.Route53 option(s): {missing}")
 
     def check(self, options, address):
         if options.fqdn.endswith("."):

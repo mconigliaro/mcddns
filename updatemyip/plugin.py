@@ -21,7 +21,10 @@ class Plugin(abc.ABC):
         log.debug(f"Calling plugin method: {obj_name}.{method}()")
         return getattr(self, method)(*args, **kwargs)
 
-    def options(self, parser):
+    def options_pre(self, parser):
+        pass
+
+    def options_post(self, parser, options):
         pass
 
 
