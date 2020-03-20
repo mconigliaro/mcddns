@@ -1,5 +1,6 @@
 import itertools as it
 import logging as log
+import updatemyip.errors as err
 import updatemyip.options as opt
 import updatemyip.plugin as pi
 import updatemyip.util as util
@@ -22,9 +23,13 @@ def main(plugin_module_paths=[], args=None):
         util.backoff(attempt, opts.no_backoff)
         counter = f"{plugin_attempt + 1}/{opts.retry + 1}"
         log.info(f"[{counter}] Trying address plugin: {plugin_name}")
-        address = plugin.call("fetch", opts)
-        if plugin.call("validate", opts, address):
-            break
+        try:
+            address = plugin.call("fetch", opts)
+            if plugin.call("validate", opts, address):
+                break
+        except err.PluginError as e:
+            log.warning(e)
+            next
     else:
         log.error(f"All address plugins failed")
         return RETURN_CODE_ERROR_ADDRESS
@@ -37,19 +42,23 @@ def main(plugin_module_paths=[], args=None):
         util.backoff(attempt, opts.no_backoff)
         counter = f"{attempt + 1}/{opts.retry + 1}"
         log.info(f"[{counter}] Trying DNS plugin: {opts.dns_plugin}")
-        if plugin.call("check", opts, address):
-            if opts.dry_run:
-                log.info(f"DNS will be updated: {desired_record}")
-                return RETURN_CODE_DRY_RUN
-            else:
-                if plugin.call("update", opts, address):
-                    log.info(f"DNS updated: {desired_record}")
-                    break
+        try:
+            if plugin.call("check", opts, address):
+                if opts.dry_run:
+                    log.info(f"DNS will be updated: {desired_record}")
+                    return RETURN_CODE_DRY_RUN
                 else:
-                    log.error(f"DNS update failed")
-        else:
-            log.info(f"No DNS update required")
-            return RETURN_CODE_NOOP
+                    if plugin.call("update", opts, address):
+                        log.info(f"DNS updated: {desired_record}")
+                        break
+                    else:
+                        log.error(f"DNS update failed")
+            else:
+                log.info(f"No DNS update required")
+                return RETURN_CODE_NOOP
+        except err.PluginError as e:
+            log.warning(e)
+            next
     else:
         log.error(f"DNS plugin failed")
         return RETURN_CODE_ERROR_DNS

@@ -2,9 +2,9 @@ class UpdateMyIpError(Exception):
     pass
 
 
-class PluginError(UpdateMyIpError):
+class NoSuchPluginError(UpdateMyIpError):
     pass
 
 
-class NoSuchPluginError(PluginError):
+class PluginError(UpdateMyIpError):
     pass

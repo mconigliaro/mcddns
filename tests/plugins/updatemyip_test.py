@@ -1,5 +1,5 @@
+import updatemyip.errors as err
 import updatemyip.plugin as plugin
-import updatemyip.validator as validator
 
 
 class Address(plugin.AddressPlugin):
@@ -7,17 +7,17 @@ class Address(plugin.AddressPlugin):
     def fetch(self, options):
         return "127.0.0.1"
 
-    def validate(self, options, address):
-        return validator.ipv4_address(address)
 
-
-class AddressFail(plugin.AddressPlugin):
+class AddressFalse(plugin.AddressPlugin):
 
     def fetch(self, options):
-        return "fail"
+        return "Test"
 
-    def validate(self, options, address):
-        return validator.ipv4_address(address)
+
+class AddressError(plugin.AddressPlugin):
+
+    def fetch(self, options):
+        raise err.PluginError("Test")
 
 
 class DNS(plugin.DNSPlugin):
@@ -32,7 +32,7 @@ class DNS(plugin.DNSPlugin):
         return True
 
 
-class DNSCheckFail(plugin.DNSPlugin):
+class DNSCheckFalse(plugin.DNSPlugin):
 
     def check(self, options, address):
         return False
@@ -41,7 +41,16 @@ class DNSCheckFail(plugin.DNSPlugin):
         return True
 
 
-class DNSUpdateFail(plugin.DNSPlugin):
+class DNSCheckError(plugin.DNSPlugin):
+
+    def check(self, options, address):
+        raise err.PluginError("Test")
+
+    def update(self, options, address):
+        return True
+
+
+class DNSUpdateFalse(plugin.DNSPlugin):
 
     def check(self, options, address):
         return True

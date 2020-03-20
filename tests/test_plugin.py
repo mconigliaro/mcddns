@@ -25,9 +25,10 @@ def test_plugin_full_name(original, prefix, result):
     "type, plugins",
     [
         [pi.AddressPlugin,
-            ["test.Address", "test.AddressFail"]],
+            ["test.Address", "test.AddressFalse", "test.AddressError"]],
         [pi.DNSPlugin,
-            ["test.DNS", "test.DNSCheckFail", "test.DNSUpdateFail"]]
+            ["test.DNS", "test.DNSCheckFalse", "test.DNSCheckError",
+             "test.DNSUpdateFalse"]]
     ]
 )
 def test_list_plugins(type, plugins):

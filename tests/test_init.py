@@ -11,7 +11,12 @@ import updatemyip as umip
             umip.RETURN_CODE_SUCCESS
         ],
         [
-            ["test", "-a", "test.AddressFail", "-d", "test.DNS",
+            ["test", "-a", "test.AddressFalse", "-d", "test.DNS",
+             "--no-backoff"],
+            umip.RETURN_CODE_ERROR_ADDRESS
+        ],
+        [
+            ["test", "-a", "test.AddressError", "-d", "test.DNS",
              "--no-backoff"],
             umip.RETURN_CODE_ERROR_ADDRESS
         ],
@@ -20,17 +25,22 @@ import updatemyip as umip
             umip.RETURN_CODE_DRY_RUN
         ],
         [
-            ["test", "-a", "test.AddressFail", "-a", "test.Address",
+            ["test", "-a", "test.AddressFalse", "-a", "test.Address",
              "-d", "test.DNS", "--no-backoff"],
             umip.RETURN_CODE_SUCCESS
         ],
         [
-            ["test", "-a", "test.Address", "-d", "test.DNSCheckFail",
+            ["test", "-a", "test.Address", "-d", "test.DNSCheckFalse",
              "--no-backoff"],
             umip.RETURN_CODE_NOOP
         ],
         [
-            ["test", "-a", "test.Address", "-d", "test.DNSUpdateFail",
+            ["test", "-a", "test.Address", "-d", "test.DNSCheckError",
+             "--no-backoff"],
+            umip.RETURN_CODE_ERROR_DNS
+        ],
+        [
+            ["test", "-a", "test.Address", "-d", "test.DNSUpdateFalse",
              "--no-backoff"],
             umip.RETURN_CODE_ERROR_DNS
         ]
