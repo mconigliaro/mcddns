@@ -1,6 +1,6 @@
 import itertools as it
 import logging as log
-import updatemyip.errors as err
+import updatemyip.exceptions as exc
 import updatemyip.options as opt
 import updatemyip.plugin as pi
 import updatemyip.util as util
@@ -27,9 +27,10 @@ def main(plugin_module_paths=[], args=None):
             address = plugin.call("fetch", opts)
             if plugin.call("validate", opts, address):
                 break
-        except err.PluginError as e:
-            log.warning(e)
-            next
+        except exc.PluginError as e:
+            log.error(e)
+        except Exception as e:
+            log.exception(e)
     else:
         log.error(f"All address plugins failed")
         return RETURN_CODE_ERROR_ADDRESS
@@ -50,17 +51,16 @@ def main(plugin_module_paths=[], args=None):
                 else:
                     if plugin.call("update", opts, address):
                         log.info(f"DNS updated: {desired_record}")
-                        break
+                        return RETURN_CODE_SUCCESS
                     else:
                         log.error(f"DNS update failed")
             else:
                 log.info(f"No DNS update required")
                 return RETURN_CODE_NOOP
-        except err.PluginError as e:
-            log.warning(e)
-            next
+        except exc.PluginError as e:
+            log.error(e)
+        except Exception as e:
+            log.exception(e)
     else:
         log.error(f"DNS plugin failed")
         return RETURN_CODE_ERROR_DNS
-
-    return RETURN_CODE_SUCCESS

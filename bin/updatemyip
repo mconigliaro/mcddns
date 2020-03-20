@@ -15,4 +15,4 @@ pi_module_paths = [
 ]
 
 exit_code = umip.main(pi_module_paths)
-exit(0) if exit_code < 1 else exit(exit_code)
+exit(0) if exit_code < 0 else exit(exit_code)

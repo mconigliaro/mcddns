@@ -1,6 +1,6 @@
 import os
 import pytest as pt
-import updatemyip.errors as err
+import updatemyip.exceptions as exc
 import updatemyip.plugin as pi
 
 
@@ -47,5 +47,5 @@ def test_init_plugin(name, base_type):
 
 
 def test_init_plugin_unknown():
-    with pt.raises(err.NoSuchPluginError):
+    with pt.raises(exc.NoSuchPluginError):
         pi.init_plugin("test.unknown")

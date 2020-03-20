@@ -12,6 +12,7 @@ Industrial-strength dynamic DNS client
 
 ### To Do
 
+- Improve plugin error handling
 - Add docs
 - Add tests for built-in plugins?
 - How to deal with required plugin options?

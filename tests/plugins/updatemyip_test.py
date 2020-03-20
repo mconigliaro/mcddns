@@ -1,4 +1,4 @@
-import updatemyip.errors as err
+import updatemyip.exceptions as exc
 import updatemyip.plugin as plugin
 
 
@@ -17,7 +17,7 @@ class AddressFalse(plugin.AddressPlugin):
 class AddressError(plugin.AddressPlugin):
 
     def fetch(self, options):
-        raise err.PluginError("Test")
+        raise exc.PluginError("Test")
 
 
 class DNS(plugin.DNSPlugin):
@@ -44,7 +44,7 @@ class DNSCheckFalse(plugin.DNSPlugin):
 class DNSCheckError(plugin.DNSPlugin):
 
     def check(self, options, address):
-        raise err.PluginError("Test")
+        raise exc.PluginError("Test")
 
     def update(self, options, address):
         return True

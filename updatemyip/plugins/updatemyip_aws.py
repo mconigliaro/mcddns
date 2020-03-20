@@ -2,7 +2,7 @@ import boto3
 import botocore.client as bc
 import botocore.exceptions as be
 import logging as log
-import updatemyip.errors as err
+import updatemyip.exceptions as exc
 import updatemyip.plugin as pi
 
 
@@ -31,13 +31,8 @@ class Route53(pi.DNSPlugin):
                 MaxItems="1",
             )["ResourceRecordSets"]
 
-        except be.ConnectionError as e:
-            raise err.PluginError(e)
-
-        except be.ClientError as e:
-            code = e.response['Error']['Code']
-            msg = e.response['Error']['Message']
-            raise err.PluginError(f"{code}: {msg}")
+        except (be.ConnectionError, be.ClientError) as e:
+            raise exc.PluginError(e) from e
 
         if rrsets and rrsets[0]["Name"] == fqdn:
             cur_name = rrsets[0]["Name"].rstrip(".")
@@ -79,12 +74,7 @@ class Route53(pi.DNSPlugin):
                 ChangeBatch={"Changes": self.changes},
             )
 
-        except be.ConnectionError as e:
-            raise err.PluginError(e)
-
-        except be.ClientError as e:
-            code = e.response['Error']['Code']
-            msg = e.response['Error']['Message']
-            raise err.PluginError(f"{code}: {msg}")
+        except (be.ConnectionError, be.ClientError) as e:
+            raise exc.PluginError(e) from e
 
         return True

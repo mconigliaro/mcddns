@@ -5,7 +5,7 @@ import logging as log
 import os
 import pkgutil as pu
 import sys
-import updatemyip.errors as err
+import updatemyip.exceptions as exc
 import updatemyip.meta as meta
 import updatemyip.util as util
 import updatemyip.validator as val
@@ -74,4 +74,4 @@ def init_plugin(name, *args, **kwargs):
     try:
         return list_plugins()[name](*args, **kwargs)
     except KeyError:
-        raise err.NoSuchPluginError(f"No such plugin: {name}")
+        raise exc.NoSuchPluginError(f"No such plugin: {name}")
