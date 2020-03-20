@@ -1,39 +1,38 @@
 import pytest as pt
 import os
 import updatemyip as umip
-import updatemyip.plugin as pi
 
 
 @pt.mark.parametrize(
     "args, exit_code",
     [
         [
-            ["test", "-a", "test.Address", "-d", "test.DNSNoOp"],
-            pi.PLUGIN_STATUS_NOOP
-        ],
-        [
-            ["test", "-a", "test.Address", "-d", "test.DNSDryRun",
-             "--dry-run"],
-            pi.PLUGIN_STATUS_DRY_RUN
+            ["test", "-a", "test.Address", "-d", "test.DNS"],
+            umip.RETURN_CODE_SUCCESS
         ],
         [
             ["test", "-a", "test.AddressFail", "-d", "test.DNS",
              "--no-backoff"],
-            pi.PLUGIN_STATUS_FAILURE
+            umip.RETURN_CODE_ERROR_ADDRESS
+        ],
+        [
+            ["test", "-a", "test.Address", "-d", "test.DNS", "--dry-run"],
+            umip.RETURN_CODE_DRY_RUN
         ],
         [
             ["test", "-a", "test.AddressFail", "-a", "test.Address",
              "-d", "test.DNS", "--no-backoff"],
-            pi.PLUGIN_STATUS_SUCCESS
+            umip.RETURN_CODE_SUCCESS
         ],
         [
-            ["test", "-a", "test.Address", "-d", "test.DNSFail",
+            ["test", "-a", "test.Address", "-d", "test.DNSCheckFail",
              "--no-backoff"],
-            pi.PLUGIN_STATUS_FAILURE
+            umip.RETURN_CODE_NOOP
         ],
         [
-            ["test", "-a", "test.Address", "-d", "test.DNS"],
-            pi.PLUGIN_STATUS_SUCCESS
+            ["test", "-a", "test.Address", "-d", "test.DNSUpdateFail",
+             "--no-backoff"],
+            umip.RETURN_CODE_ERROR_DNS
         ]
     ]
 )

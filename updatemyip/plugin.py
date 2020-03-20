@@ -13,11 +13,6 @@ import updatemyip.validator as val
 PLUGIN_MODULE_BUILTIN_PATH = os.path.join(os.path.dirname(__file__), "plugins")
 PLUGIN_MODULE_PREFIX = f"{meta.NAME}_"
 
-PLUGIN_STATUS_NOOP = 0
-PLUGIN_STATUS_DRY_RUN = 1
-PLUGIN_STATUS_SUCCESS = 2
-PLUGIN_STATUS_FAILURE = 3
-
 
 class Plugin(abc.ABC):
 

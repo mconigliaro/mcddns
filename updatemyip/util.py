@@ -22,7 +22,7 @@ def backoff(attempt, sleep=True):
 
     delay = fibonacci(attempt)[1]
     if sleep and attempt:
-        log.info(f"Retrying in {delay}s...")
+        log.warning(f"Retrying in {delay}s...")
         time.sleep(delay)
 
     return delay

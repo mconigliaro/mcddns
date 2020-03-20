@@ -29,31 +29,22 @@ class DNS(plugin.DNSPlugin):
         return True
 
     def update(self, options, address):
-        return plugin.PLUGIN_STATUS_SUCCESS
+        return True
 
 
-class DNSNoOp(plugin.DNSPlugin):
+class DNSCheckFail(plugin.DNSPlugin):
 
     def check(self, options, address):
         return False
 
     def update(self, options, address):
-        return plugin.PLUGIN_STATUS_NOOP
+        return True
 
 
-class DNSDryRun(plugin.DNSPlugin):
+class DNSUpdateFail(plugin.DNSPlugin):
 
     def check(self, options, address):
         return True
 
     def update(self, options, address):
-        return plugin.PLUGIN_STATUS_DRY_RUN
-
-
-class DNSFail(plugin.DNSPlugin):
-
-    def check(self, options, address):
-        return True
-
-    def update(self, options, address):
-        return plugin.PLUGIN_STATUS_FAILURE
+        return False

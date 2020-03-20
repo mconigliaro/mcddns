@@ -10,11 +10,7 @@ class Route53(pi.DNSPlugin):
         parser.add_argument("--aws-route53-hosted-zone-id",
                             default="CHANGE_ME")
 
-    # FIXME: Implement
     def check(self, options, address):
-        return True
-
-    def update(self, options, address):
         if options.fqdn.endswith("."):
             fqdn = options.fqdn
         else:
@@ -22,15 +18,15 @@ class Route53(pi.DNSPlugin):
         records = [{"Value": address}]
 
         try:
-            client = boto3.client("route53")
+            self.changes = []
+            self.client = boto3.client("route53")
 
-            rrsets = client.list_resource_record_sets(
+            rrsets = self.client.list_resource_record_sets(
                 HostedZoneId=options.aws_route53_hosted_zone_id,
                 StartRecordName=fqdn,
                 MaxItems="1",
             )["ResourceRecordSets"]
 
-            changes = []
             if rrsets and rrsets[0]["Name"] == fqdn:
                 cur_name = rrsets[0]["Name"].rstrip(".")
                 cur_ttl = rrsets[0]["TTL"]
@@ -43,16 +39,16 @@ class Route53(pi.DNSPlugin):
                 )
 
                 if cur_type != options.dns_rrtype:
-                    changes.append({
+                    self.changes.append({
                         "Action": "DELETE",
                         "ResourceRecordSet": rrsets[0]
                     })
                 elif cur_ttl == options.dns_ttl and cur_records == records:
-                    return pi.PLUGIN_STATUS_NOOP
+                    return False
             else:
                 log.info(f"DNS record not found: {options.fqdn}")
 
-            changes.append({
+            self.changes.append({
                 "Action": "UPSERT",
                 "ResourceRecordSet": {
                     "Name": fqdn,
@@ -62,17 +58,25 @@ class Route53(pi.DNSPlugin):
                 },
             })
 
-            if options.dry_run:
-                return pi.PLUGIN_STATUS_DRY_RUN
-            else:
-                client.change_resource_record_sets(
-                    HostedZoneId=options.aws_route53_hosted_zone_id,
-                    ChangeBatch={"Changes": changes},
-                )
-                return pi.PLUGIN_STATUS_SUCCESS
+        except be.ClientError as e:
+            code = e.response['Error']['Code']
+            msg = e.response['Error']['Message']
+            log.warning(f"{code}: {msg}")
+            return False
+
+        return True if self.changes else False
+
+    def update(self, options, address):
+        try:
+            self.client.change_resource_record_sets(
+                HostedZoneId=options.aws_route53_hosted_zone_id,
+                ChangeBatch={"Changes": self.changes},
+            )
 
         except be.ClientError as e:
             code = e.response['Error']['Code']
             msg = e.response['Error']['Message']
             log.warning(f"{code}: {msg}")
-            return pi.PLUGIN_STATUS_FAILURE
+            return False
+
+        return True

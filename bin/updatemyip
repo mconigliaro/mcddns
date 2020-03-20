@@ -14,10 +14,5 @@ pi_module_paths = [
     pi.PLUGIN_MODULE_BUILTIN_PATH,
 ]
 
-result = umip.main(pi_module_paths)
-if result in (pi.PLUGIN_STATUS_NOOP,
-              pi.PLUGIN_STATUS_DRY_RUN,
-              pi.PLUGIN_STATUS_SUCCESS):
-    exit(0)
-else:
-    exit(1)
+exit_code = umip.main(pi_module_paths)
+exit(0) if exit_code < 1 else exit(exit_code)
