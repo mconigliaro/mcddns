@@ -1,26 +1,26 @@
 import updatemyip.exceptions as exc
-import updatemyip.plugin as plugin
+import updatemyip.provider as pro
 
 
-class Address(plugin.AddressPlugin):
+class Address(pro.AddressProvider):
 
     def fetch(self, options):
         return "127.0.0.1"
 
 
-class AddressFalse(plugin.AddressPlugin):
+class AddressFalse(pro.AddressProvider):
 
     def fetch(self, options):
         return "Test"
 
 
-class AddressError(plugin.AddressPlugin):
+class AddressError(pro.AddressProvider):
 
     def fetch(self, options):
-        raise exc.PluginError("Test")
+        raise exc.ProviderError("Test")
 
 
-class DNS(plugin.DNSPlugin):
+class DNS(pro.DNSProvider):
 
     def options(self, parser):
         return "test dns options"
@@ -32,7 +32,7 @@ class DNS(plugin.DNSPlugin):
         return True
 
 
-class DNSCheckFalse(plugin.DNSPlugin):
+class DNSCheckFalse(pro.DNSProvider):
 
     def check(self, options, address):
         return False
@@ -41,16 +41,16 @@ class DNSCheckFalse(plugin.DNSPlugin):
         return True
 
 
-class DNSCheckError(plugin.DNSPlugin):
+class DNSCheckError(pro.DNSProvider):
 
     def check(self, options, address):
-        raise exc.PluginError("Test")
+        raise exc.ProviderError("Test")
 
     def update(self, options, address):
         return True
 
 
-class DNSUpdateFalse(plugin.DNSPlugin):
+class DNSUpdateFalse(pro.DNSProvider):
 
     def check(self, options, address):
         return True

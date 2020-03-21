@@ -47,5 +47,5 @@ import updatemyip as umip
     ]
 )
 def test_main(args, exit_code):
-    test_module_paths = [os.path.join(os.path.dirname(__file__), "plugins")]
+    test_module_paths = [os.path.join(os.path.dirname(__file__), "providers")]
     assert umip.main(test_module_paths, args) == exit_code

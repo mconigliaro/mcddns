@@ -4,16 +4,16 @@ Industrial-strength dynamic DNS client
 
 ## Features
 
-- Extensibility via plugins
-- Built-in plugin result validation
-- Plugin redundancy with optional retry and Fibonacci backoff
+- Extensible plugin-oriented architecture
+- Built-in provider result validation
+- Provider redundancy with optional retry and Fibonacci backoff
 - Detailed logging
 - Dry-run mode
 
 ### To Do
 
-- How to deal with required plugin options?
-- Improve plugin error handling
+- How to deal with required provider options?
+- Improve provider error handling
 - Add docs
 - Add tests for built-in plugins?
 

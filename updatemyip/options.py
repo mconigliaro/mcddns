@@ -2,12 +2,12 @@ import argparse as ap
 import logging as log
 import sys
 import updatemyip.meta as meta
-import updatemyip.plugin as pi
+import updatemyip.provider as pi
 
 
 def parse(args=None):
-    address_plugins = sorted(pi.list_plugins(pi.AddressPlugin).keys())
-    dns_plugins = sorted(pi.list_plugins(pi.DNSPlugin).keys())
+    address_providers = sorted(pi.list_providers(pi.AddressProvider).keys())
+    dns_providers = sorted(pi.list_providers(pi.DNSProvider).keys())
 
     parser = ap.ArgumentParser(
         epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})",
@@ -30,12 +30,12 @@ def parse(args=None):
         "--retry",
         type=int,
         default=2,
-        help="number of times to retry failed plugins"
+        help="number of times to retry failed providers"
     )
     parser.add_argument(
         "--no-backoff",
         action="store_true",
-        help="disable Fibonacci backoff for failed plugins"
+        help="disable Fibonacci backoff for failed providers"
     )
     parser.add_argument(
         "-l",
@@ -51,24 +51,24 @@ def parse(args=None):
         version=f"{meta.NAME} {meta.VERSION}"
     )
 
-    address_group = parser.add_argument_group("address plugin arguments")
+    address_group = parser.add_argument_group("address provider arguments")
     address_group.add_argument(
         "-a",
-        "--address-plugins",
-        choices=address_plugins,
+        "--address-providers",
+        choices=address_providers,
         default=[],
         action="append",
         required=True,
-        help="plugin(s) used to obtain an address"
+        help="provider(s) used to obtain an address"
     )
 
-    dns_group = parser.add_argument_group("dns plugin arguments")
+    dns_group = parser.add_argument_group("dns provider arguments")
     dns_group.add_argument(
         "-d",
-        "--dns-plugin",
-        choices=dns_plugins,
+        "--dns-provider",
+        choices=dns_providers,
         required=True,
-        help="plugin used to manage DNS records"
+        help="provider used to manage DNS records"
     )
     dns_group.add_argument(
         "--dns-rrtype",
@@ -82,14 +82,14 @@ def parse(args=None):
         help="time in seconds for DNS servers to cache the record"
     )
 
-    for name, cls in pi.list_plugins().items():
+    for name, cls in pi.list_providers().items():
         cls().options_pre(parser.add_argument_group(f"{name} arguments"))
 
     options = parser.parse_args(args)
 
-    used_plugins = options.address_plugins + [options.dns_plugin]
-    post_parsers = [cls for name, cls in pi.list_plugins().items()
-                    if name in used_plugins]
+    used_providers = options.address_providers + [options.dns_provider]
+    post_parsers = [cls for name, cls in pi.list_providers().items()
+                    if name in used_providers]
     for cls in post_parsers:
         cls().options_post(parser, options)
 
@@ -100,9 +100,9 @@ def parse(args=None):
     log_level = getattr(log, options.log_level.upper())
     log.basicConfig(format=log_format, level=log_level)
 
-    log.debug(f"Plugin search paths: {', '.join(sys.path)}")
-    log.debug(f"Found address plugins: {', '.join(address_plugins)}")
-    log.debug(f"Found DNS plugins: {', '.join(dns_plugins)}")
+    log.debug(f"Provider search paths: {', '.join(sys.path)}")
+    log.debug(f"Found address providers: {', '.join(address_providers)}")
+    log.debug(f"Found DNS providers: {', '.join(dns_providers)}")
     options_str = ', '.join(f'{k}={repr(v)}'
                             for k, v in sorted(vars(options).items()))
     log.debug(f"Options: {options_str}")

@@ -3,10 +3,10 @@ import botocore.client as bc
 import botocore.exceptions as be
 import logging as log
 import updatemyip.exceptions as exc
-import updatemyip.plugin as pi
+import updatemyip.provider as pro
 
 
-class Route53(pi.DNSPlugin):
+class Route53(pro.DNSProvider):
 
     def options_pre(self, parser):
         parser.add_argument("--aws-route53-hosted-zone-id")
@@ -39,7 +39,7 @@ class Route53(pi.DNSPlugin):
             )["ResourceRecordSets"]
 
         except (be.ConnectionError, be.ClientError) as e:
-            raise exc.PluginError(e) from e
+            raise exc.ProviderError(e) from e
 
         if rrsets and rrsets[0]["Name"] == fqdn:
             cur_name = rrsets[0]["Name"].rstrip(".")
@@ -82,6 +82,6 @@ class Route53(pi.DNSPlugin):
             )
 
         except (be.ConnectionError, be.ClientError) as e:
-            raise exc.PluginError(e) from e
+            raise exc.ProviderError(e) from e
 
         return True
