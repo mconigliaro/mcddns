@@ -7,45 +7,39 @@ import updatemyip as umip
     "args, exit_code",
     [
         [
-            ["test", "-a", "test.Address", "-d", "test.DNS"],
+            "-a test.Address test.DNS test",
             umip.RETURN_CODE_SUCCESS
         ],
         [
-            ["test", "-a", "test.AddressFalse", "-d", "test.DNS",
-             "--no-backoff"],
+            "-a test.AddressFalse --no-backoff test.DNS test",
             umip.RETURN_CODE_ERROR_ADDRESS
         ],
         [
-            ["test", "-a", "test.AddressError", "-d", "test.DNS",
-             "--no-backoff"],
+            "-a test.AddressError --no-backoff test.DNS test",
             umip.RETURN_CODE_ERROR_ADDRESS
         ],
         [
-            ["test", "-a", "test.Address", "-d", "test.DNS", "--dry-run"],
+            "-a test.Address --dry-run test.DNS test",
             umip.RETURN_CODE_DRY_RUN
         ],
         [
-            ["test", "-a", "test.AddressFalse", "-a", "test.Address",
-             "-d", "test.DNS", "--no-backoff"],
+            "-a test.AddressFalse -a test.Address --no-backoff test.DNS test",
             umip.RETURN_CODE_SUCCESS
         ],
         [
-            ["test", "-a", "test.Address", "-d", "test.DNSCheckFalse",
-             "--no-backoff"],
+            "-a test.Address --no-backoff test.DNSCheckFalse test --test",
             umip.RETURN_CODE_NOOP
         ],
         [
-            ["test", "-a", "test.Address", "-d", "test.DNSCheckError",
-             "--no-backoff"],
+            "-a test.Address --no-backoff test.DNSCheckError test",
             umip.RETURN_CODE_ERROR_DNS
         ],
         [
-            ["test", "-a", "test.Address", "-d", "test.DNSUpdateFalse",
-             "--no-backoff"],
+            "-a test.Address --no-backoff test.DNSUpdateFalse test",
             umip.RETURN_CODE_ERROR_DNS
         ]
     ]
 )
 def test_main(args, exit_code):
     test_module_paths = [os.path.join(os.path.dirname(__file__), "providers")]
-    assert umip.main(test_module_paths, args) == exit_code
+    assert umip.main(test_module_paths, args.split()) == exit_code

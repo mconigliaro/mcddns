@@ -22,9 +22,6 @@ class AddressError(pro.AddressProvider):
 
 class DNS(pro.DNSProvider):
 
-    def options(self, parser):
-        return "test dns options"
-
     def check(self, options, address):
         return True
 
@@ -33,6 +30,9 @@ class DNS(pro.DNSProvider):
 
 
 class DNSCheckFalse(pro.DNSProvider):
+
+    def options_pre(self, parser):
+        parser.add_argument("--test", action="store_true", required=True)
 
     def check(self, options, address):
         return False

@@ -37,7 +37,7 @@ def main(provider_module_paths=[], args=None):
 
     log.info(f"Got address: {address}")
 
-    desired_record = f"{opts.fqdn} {opts.dns_ttl} {opts.dns_rrtype} {address}"
+    desired_record = f"{opts.fqdn} {opts.ttl} {opts.rrtype} {address}"
     provider = pro.init_provider(opts.dns_provider)
     for i in range(opts.retry + 1):
         util.backoff(i, opts.no_backoff)

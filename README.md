@@ -12,7 +12,7 @@ Industrial-strength dynamic DNS client
 
 ### To Do
 
-- How to deal with required provider options?
+- Clean up argument parsing
 - Improve provider error handling
 - Add docs
 - Add tests for built-in plugins?

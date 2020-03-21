@@ -9,15 +9,7 @@ import updatemyip.provider as pro
 class Route53(pro.DNSProvider):
 
     def options_pre(self, parser):
-        parser.add_argument("--aws-route53-hosted-zone-id")
-
-    def options_post(self, parser, options):
-        required = ["aws_route53_hosted_zone_id"]
-        missing = ", ".join(f"--{opt.replace('_', '-')}"
-                            for opt in required
-                            if not getattr(options, opt))
-        if missing:
-            parser.error(f"Missing required aws.Route53 option(s): {missing}")
+        parser.add_argument("--hosted-zone-id", required=True)
 
     def check(self, options, address):
         if options.fqdn.endswith("."):
@@ -33,7 +25,7 @@ class Route53(pro.DNSProvider):
                                retries={'max_attempts': 0})
             self.client = boto3.client("route53", config=config)
             rrsets = self.client.list_resource_record_sets(
-                HostedZoneId=options.aws_route53_hosted_zone_id,
+                HostedZoneId=options.hosted_zone_id,
                 StartRecordName=fqdn,
                 MaxItems="1",
             )["ResourceRecordSets"]
@@ -52,12 +44,12 @@ class Route53(pro.DNSProvider):
                 f"Current DNS record: {cur_record}"
             )
 
-            if cur_type != options.dns_rrtype:
+            if cur_type != options.rrtype:
                 self.changes.append({
                     "Action": "DELETE",
                     "ResourceRecordSet": rrsets[0]
                 })
-            elif cur_ttl == options.dns_ttl and cur_records == records:
+            elif cur_ttl == options.ttl and cur_records == records:
                 return False
         else:
             log.info(f"DNS record not found: {options.fqdn}")
@@ -66,8 +58,8 @@ class Route53(pro.DNSProvider):
             "Action": "UPSERT",
             "ResourceRecordSet": {
                 "Name": fqdn,
-                "Type": options.dns_rrtype,
-                "TTL": options.dns_ttl,
+                "Type": options.rrtype,
+                "TTL": options.ttl,
                 "ResourceRecords": records,
             },
         })
@@ -77,7 +69,7 @@ class Route53(pro.DNSProvider):
     def update(self, options, address):
         try:
             self.client.change_resource_record_sets(
-                HostedZoneId=options.aws_route53_hosted_zone_id,
+                HostedZoneId=options.hosted_zone_id,
                 ChangeBatch={"Changes": self.changes},
             )
 
