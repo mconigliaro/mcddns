@@ -66,8 +66,13 @@ def parse(args=None):
             obj.options_pre(parser.add_argument_group(f"{name} arguments"))
         elif isinstance(obj, pro.DNSProvider):
             subparser = subparsers.add_parser(
-                name, help=f"use the {name} provider")
-            subparser.add_argument("fqdn", help="fully-qualified domain name")
+                name,
+                help=f"use the {name} provider"
+            )
+            subparser.add_argument(
+                "fqdn",
+                help="fully-qualified domain name"
+            )
             subparser.add_argument(
                 "--rrtype",
                 default="A",
