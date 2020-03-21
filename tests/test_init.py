@@ -7,35 +7,35 @@ import updatemyip as umip
     "args, exit_code",
     [
         [
-            "-a test.Address test.DNS test",
+            "test.DNS -a test.Address test",
             umip.RETURN_CODE_SUCCESS
         ],
         [
-            "-a test.AddressFalse --no-backoff test.DNS test",
+            "test.DNS -a test.AddressFalse --no-backoff test",
             umip.RETURN_CODE_ERROR_ADDRESS
         ],
         [
-            "-a test.AddressError --no-backoff test.DNS test",
+            "test.DNS -a test.AddressError --no-backoff test",
             umip.RETURN_CODE_ERROR_ADDRESS
         ],
         [
-            "-a test.Address --dry-run test.DNS test",
+            "test.DNS -a test.Address --dry-run test",
             umip.RETURN_CODE_DRY_RUN
         ],
         [
-            "-a test.AddressFalse -a test.Address --no-backoff test.DNS test",
+            "test.DNS -a test.AddressFalse -a test.Address --no-backoff test",
             umip.RETURN_CODE_SUCCESS
         ],
         [
-            "-a test.Address --no-backoff test.DNSCheckFalse test --test",
+            "test.DNSCheckFalse -a test.Address --no-backoff --test test",
             umip.RETURN_CODE_NOOP
         ],
         [
-            "-a test.Address --no-backoff test.DNSCheckError test",
+            "test.DNSCheckError -a test.Address --no-backoff test",
             umip.RETURN_CODE_ERROR_DNS
         ],
         [
-            "-a test.Address --no-backoff test.DNSUpdateFalse test",
+            "test.DNSUpdateFalse -a test.Address --no-backoff test",
             umip.RETURN_CODE_ERROR_DNS
         ]
     ]

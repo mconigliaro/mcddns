@@ -12,10 +12,11 @@ Industrial-strength dynamic DNS client
 
 ### To Do
 
-- Clean up argument parsing
-- Improve provider error handling
+- How to determine default address providers?
+- Add version info for providers
+- Improve provider exception handling
 - Add docs
-- Add tests for built-in plugins?
+- Add tests for built-in providers?
 
 ## Installation
 
@@ -40,6 +41,6 @@ Use `--help` to see available options.
 
     updatemyip
 
-### Writing Plugins
+### Writing Providers
 
-FIXME: See [updatemyip/plugins](updatemyip/plugins) and [tests/plugins](tests/plugins) for now.
+FIXME: See [updatemyip/providers](updatemyip/providers) and [tests/providers](tests/providers) for now.

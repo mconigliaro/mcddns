@@ -9,7 +9,7 @@ import updatemyip.provider as pro
 class Route53(pro.DNSProvider):
 
     def options_pre(self, parser):
-        parser.add_argument("--hosted-zone-id", required=True)
+        parser.add_argument("hosted_zone_id")
 
     def check(self, options, address):
         if options.fqdn.endswith("."):
@@ -40,7 +40,7 @@ class Route53(pro.DNSProvider):
             cur_records = rrsets[0]["ResourceRecords"]
             cur_address = " ".join(r["Value"] for r in cur_records)
             cur_record = f"{cur_name} {cur_ttl} {cur_type} {cur_address}"
-            log.info(
+            log.debug(
                 f"Current DNS record: {cur_record}"
             )
 
@@ -52,7 +52,7 @@ class Route53(pro.DNSProvider):
             elif cur_ttl == options.ttl and cur_records == records:
                 return False
         else:
-            log.info(f"DNS record not found: {options.fqdn}")
+            log.debug(f"DNS record not found: {options.fqdn}")
 
         self.changes.append({
             "Action": "UPSERT",

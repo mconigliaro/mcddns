@@ -10,20 +10,22 @@ def test_import_modules():
 
 
 @pt.mark.parametrize(
-    "original, prefix, result",
+    "original, result",
     [
-        [int, None, "builtins.int"],
-        [int, "built", "ins.int"],
-        [int, "otherprefix", "builtins.int"],
+        [int, "builtins.int"]
     ]
 )
-def test_provider_full_name(original, prefix, result):
-    assert pro.provider_full_name(original, prefix) == result
+def test_provider_full_name(original, result):
+    assert pro.provider_full_name(original) == result
 
 
 @pt.mark.parametrize(
-    "type, providers",
+    "types, providers",
     [
+        [None,
+            ["test.Address", "test.AddressFalse", "test.AddressError",
+             "test.DNS", "test.DNSCheckFalse", "test.DNSCheckError",
+             "test.DNSUpdateFalse"]],
         [pro.AddressProvider,
             ["test.Address", "test.AddressFalse", "test.AddressError"]],
         [pro.DNSProvider,
@@ -31,8 +33,13 @@ def test_provider_full_name(original, prefix, result):
              "test.DNSUpdateFalse"]]
     ]
 )
-def test_list_providers(type, providers):
-    assert list(pro.list_providers(type).keys()) == providers
+def test_list_providers(types, providers):
+    assert list(pro.list_providers(types).keys()) == providers
+
+
+def test_list_providers_invalid():
+    with pt.raises(exc.InvalidProviderTypeError):
+        pro.list_providers(int)
 
 
 @pt.mark.parametrize(

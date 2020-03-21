@@ -20,11 +20,11 @@ def main(provider_module_paths=[], args=None):
     addr_providers = {p: pro.init_provider(p) for p in opts.address_providers}
     providers = it.product(range(opts.retry + 1), addr_providers.items())
     for i, (provider_i, (provider_name, provider)) in enumerate(providers):
-        util.backoff(i, opts.no_backoff)
-        counter = f"{provider_i + 1}/{opts.retry + 1}"
-        log.info(f"[{counter}] Trying address provider: {provider_name}")
+        util.backoff(i, max_retries=opts.retry, no_delay=opts.no_backoff)
+        log.debug(f"Trying address provider: {provider_name}")
         try:
             address = provider.call("fetch", opts)
+            log.info(f"Got address: {address}")
             if provider.call("validate", opts, address):
                 break
         except exc.ProviderError as e:
@@ -32,17 +32,15 @@ def main(provider_module_paths=[], args=None):
         except Exception as e:
             log.exception(e)
     else:
-        log.critical(f"All address providers failed")
+        addr_provider_names = ', '.join(k for k in addr_providers.keys())
+        log.critical(f"All address providers failed: {addr_provider_names}")
         return RETURN_CODE_ERROR_ADDRESS
-
-    log.info(f"Got address: {address}")
 
     desired_record = f"{opts.fqdn} {opts.ttl} {opts.rrtype} {address}"
     provider = pro.init_provider(opts.dns_provider)
     for i in range(opts.retry + 1):
-        util.backoff(i, opts.no_backoff)
-        counter = f"{i + 1}/{opts.retry + 1}"
-        log.info(f"[{counter}] Trying DNS provider: {opts.dns_provider}")
+        util.backoff(i, max_retries=opts.retry, no_delay=opts.no_backoff)
+        log.debug(f"Trying DNS provider: {opts.dns_provider}")
         try:
             if provider.call("check", opts, address):
                 if opts.dry_run:
@@ -62,5 +60,5 @@ def main(provider_module_paths=[], args=None):
         except Exception as e:
             log.exception(e)
     else:
-        log.critical(f"DNS provider failed")
+        log.critical(f"DNS provider failed: {opts.dns_provider}")
         return RETURN_CODE_ERROR_DNS

@@ -6,51 +6,16 @@ import updatemyip.provider as pro
 
 
 def parse(args=None):
-    address_providers = sorted(pro.list_providers(pro.AddressProvider).keys())
-    dns_providers = sorted(pro.list_providers(pro.DNSProvider).keys())
+    address_providers = pro.list_providers(pro.AddressProvider)
+    address_provider_names = sorted(address_providers.keys())
+    dns_providers = pro.list_providers(pro.DNSProvider)
+    dns_provider_names = sorted(dns_providers.keys())
 
     parser = ap.ArgumentParser(
         prog=meta.NAME,
         epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})",
+        # FIXME: https://bugs.python.org/issue27927
         formatter_class=ap.ArgumentDefaultsHelpFormatter
-    )
-
-    parser.add_argument(
-        "-a",
-        "--address-providers",
-        choices=address_providers,
-        default=[],
-        action="append",
-        help="provider(s) used to obtain an address"
-    )
-    parser.add_argument(
-        "--timeout",
-        type=float,
-        default=10,
-        help="timeout for network requests"
-    )
-    parser.add_argument(
-        "--retry",
-        type=int,
-        default=2,
-        help="number of times to retry failed providers"
-    )
-    parser.add_argument(
-        "--no-backoff",
-        action="store_true",
-        help="disable fibonacci backoff for failed providers"
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="show what will happen without making changes"
-    )
-    parser.add_argument(
-        "-l",
-        "--log-level",
-        choices=("debug", "info", "warning", "error", "critical"),
-        default="info",
-        help="show messages of this level or higher"
     )
     parser.add_argument(
         "-v",
@@ -59,41 +24,81 @@ def parse(args=None):
         version=f"{meta.NAME} {meta.VERSION}"
     )
 
-    subparsers = parser.add_subparsers(help='dns provider')
-    for name, cls in pro.list_providers().items():
-        obj = cls()
-        if isinstance(obj, pro.AddressProvider):
-            obj.options_pre(parser.add_argument_group(f"{name} arguments"))
-        elif isinstance(obj, pro.DNSProvider):
-            subparser = subparsers.add_parser(
-                name,
-                help=f"use the {name} provider"
+    subparsers = parser.add_subparsers(help='dns providers')
+    for dns_provider_name, dns_provider_cls in dns_providers.items():
+        subparser = subparsers.add_parser(
+            dns_provider_name,
+            help=f"use the {dns_provider_name} provider"
+        )
+        subparser.add_argument(
+            "fqdn",
+            help="fully-qualified domain name"
+        )
+        subparser.add_argument(
+            "-a",
+            "--address-providers",
+            choices=address_provider_names,
+            default=[],
+            action="append",
+            help="provider(s) used to obtain an address"
+        )
+        subparser.add_argument(
+            "--rrtype",
+            default="A",
+            help="record type"
+        )
+        subparser.add_argument(
+            "--ttl",
+            type=int,
+            default=300,
+            help="time to live"
+        )
+        subparser.add_argument(
+            "--timeout",
+            type=float,
+            default=10,
+            help="timeout for network requests"
+        )
+        subparser.add_argument(
+            "--retry",
+            type=int,
+            default=2,
+            help="number of times to retry failed providers"
+        )
+        subparser.add_argument(
+            "--no-backoff",
+            action="store_true",
+            help="disable fibonacci backoff for failed providers"
+        )
+        subparser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="show what will happen without making changes"
+        )
+        subparser.add_argument(
+            "-l",
+            "--log-level",
+            choices=("debug", "info", "warning", "error", "critical"),
+            default="info",
+            help="show messages of this level or higher"
+        )
+
+        subparser.set_defaults(dns_provider=dns_provider_name)
+        dns_provider_cls().options_pre(subparser)
+        for addr_provider_name, addr_provider_cls in address_providers.items():
+            addr_provider_cls().options_pre(parser.add_argument_group(
+                f"{addr_provider_name} arguments")
             )
-            subparser.add_argument(
-                "fqdn",
-                help="fully-qualified domain name"
-            )
-            subparser.add_argument(
-                "--rrtype",
-                default="A",
-                help="record type"
-            )
-            subparser.add_argument(
-                "--ttl",
-                type=int,
-                default=300,
-                help="time to live"
-            )
-            subparser.set_defaults(dns_provider=name)
-            obj.options_pre(subparser)
 
     options = parser.parse_args(args)
 
-    used_providers = options.address_providers + [options.dns_provider]
-    post_parsers = [cls for name, cls in pro.list_providers().items()
-                    if name in used_providers]
-    for cls in post_parsers:
-        cls().options_post(parser, options)
+    if not hasattr(options, "dns_provider"):
+        parser.print_help()
+        parser.exit(2)
+
+    for name, cls in {**address_providers, **dns_providers}.items():
+        if name in options.address_providers + [options.dns_provider]:
+            cls().options_post(parser, options)
 
     if options.dry_run:
         log_format = "[%(levelname)s] (DRY-RUN) %(message)s"
@@ -103,8 +108,8 @@ def parse(args=None):
     log.basicConfig(format=log_format, level=log_level)
 
     log.debug(f"Provider search paths: {', '.join(sys.path)}")
-    log.debug(f"Found address providers: {', '.join(address_providers)}")
-    log.debug(f"Found DNS providers: {', '.join(dns_providers)}")
+    log.debug(f"Found address providers: {', '.join(address_provider_names)}")
+    log.debug(f"Found DNS providers: {', '.join(dns_provider_names)}")
     options_str = ', '.join(f'{k}={repr(v)}'
                             for k, v in sorted(vars(options).items()))
     log.debug(f"Options: {options_str}")

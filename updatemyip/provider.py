@@ -20,7 +20,7 @@ PROVIDER_MODULE_PREFIX = f"{meta.NAME}_"
 class Provider(abc.ABC):
 
     def call(self, method, *args, **kwargs):
-        obj_name = provider_full_name(self.__class__, PROVIDER_MODULE_PREFIX)
+        obj_name = provider_full_name(self.__class__)
         log.debug(f"Calling provider method: {obj_name}.{method}()")
         return getattr(self, method)(*args, **kwargs)
 
@@ -61,18 +61,29 @@ def import_modules(*paths):
     return {m: il.import_module(m) for m in modules}
 
 
-def provider_full_name(obj, prefix=None):
-    module = util.strip_prefix(ins.getmodule(obj).__name__, prefix)
-    return f"{module}.{obj.__name__}"
+def provider_full_name(obj):
+    module_name = util.strip_prefix(
+        ins.getmodule(obj).__name__,
+        PROVIDER_MODULE_PREFIX
+    )
+    return f"{module_name}.{obj.__name__}"
 
 
 def list_providers(*types):
-    if not types:
-        types = [AddressProvider, DNSProvider]
+    valid_types = [AddressProvider, DNSProvider]
+
+    if not [t for t in types if t]:
+        types = valid_types
+    else:
+        invalid_types = [str(t) for t in types if t not in valid_types]
+        if invalid_types:
+            raise exc.InvalidProviderTypeError(
+                f"Invalid provider types: {', '.join(invalid_types)}"
+            )
 
     return {
-        f"{provider_full_name(cls, PROVIDER_MODULE_PREFIX)}": cls
-        for cls in sum([type.__subclasses__() for type in types], [])
+        f"{provider_full_name(cls)}": cls
+        for cls in sum([t.__subclasses__() for t in types], [])
     }
 
 
