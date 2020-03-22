@@ -30,5 +30,8 @@ setuptools.setup(
         "Topic :: System :: Systems Administration"
     ],
     python_requires=">=3.6",
-    requires=["boto3 (<2.0, >=1.12)", "requests (< 3.0, >=2.23)"],
+    install_requires=[
+        "boto3 >=1.12, <2.0",
+        "requests >=2.23, <3.0"
+    ],
 )
