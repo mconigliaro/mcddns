@@ -84,6 +84,17 @@ Each provider type has a set of methods that will be called in a particular orde
 
 I'll write more documentation if people are interested, but for now, see the examples at [updatemyip/providers](updatemyip/providers) and [tests/providers](tests/providers).
 
+#### Releases
+
+1. Bump `VERSION` in [updatemyip/meta.py](updatemyip/meta.py)
+
+1. Update [CHANGELOG.md](CHANGELOG.md)
+
+1. Run `release` script:
+    ```
+    release <version>
+    ```
+
 ### To Do
 
 - Add tests for built-in providers
