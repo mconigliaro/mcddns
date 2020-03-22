@@ -1,5 +1,4 @@
 import pytest as pt
-import os
 import updatemyip as umip
 
 
@@ -41,5 +40,4 @@ import updatemyip as umip
     ]
 )
 def test_main(args, exit_code):
-    test_module_paths = [os.path.join(os.path.dirname(__file__), "providers")]
-    assert umip.main(test_module_paths, args.split()) == exit_code
+    assert umip.main(args=args.split()) == exit_code

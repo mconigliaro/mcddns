@@ -49,10 +49,10 @@ def test_list_providers_invalid():
         ["test.DNS", pro.DNSProvider]
     ]
 )
-def test_init_provider(name, base_type):
-    assert base_type in pro.init_provider(name).__class__.__bases__
+def test_get_provider(name, base_type):
+    assert base_type in pro.get_provider(name).__bases__
 
 
-def test_init_provider_unknown():
+def test_get_provider_unknown():
     with pt.raises(exc.NoSuchProviderError):
-        pro.init_provider("test.unknown")
+        pro.get_provider("test.unknown")

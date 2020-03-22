@@ -12,12 +12,10 @@ RETURN_CODE_ERROR_ADDRESS = 1
 RETURN_CODE_ERROR_DNS = 2
 
 
-def main(provider_module_paths=[], args=None):
-    pro.import_modules(*provider_module_paths)
+def main(default_address_providers=[], args=None):
+    opts = opt.parse(default_address_providers, args)
 
-    opts = opt.parse(args)
-
-    addr_providers = {p: pro.init_provider(p) for p in opts.address_providers}
+    addr_providers = {p: pro.get_provider(p)() for p in opts.address_providers}
     providers = it.product(range(opts.retry + 1), addr_providers.items())
     for i, (provider_i, (provider_name, provider)) in enumerate(providers):
         util.backoff(i, max_retries=opts.retry, no_delay=opts.no_backoff)
@@ -37,7 +35,7 @@ def main(provider_module_paths=[], args=None):
         return RETURN_CODE_ERROR_ADDRESS
 
     desired_record = f"{opts.fqdn} {opts.ttl} {opts.rrtype} {address}"
-    provider = pro.init_provider(opts.dns_provider)
+    provider = pro.get_provider(opts.dns_provider)()
     for i in range(opts.retry + 1):
         util.backoff(i, max_retries=opts.retry, no_delay=opts.no_backoff)
         log.debug(f"Trying DNS provider: {opts.dns_provider}")

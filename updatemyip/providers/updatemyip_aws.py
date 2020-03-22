@@ -2,8 +2,19 @@ import boto3
 import botocore.client as bc
 import botocore.exceptions as be
 import logging as log
+import requests as req
 import updatemyip.exceptions as exc
 import updatemyip.provider as pro
+
+
+class CheckIP(pro.AddressProvider):
+
+    def fetch(self, options):
+        try:
+            return req.get("https://checkip.amazonaws.com/",
+                           timeout=options.timeout).text.strip()
+        except req.exceptions.RequestException as e:
+            raise exc.ProviderError(e) from e
 
 
 class Route53(pro.DNSProvider):

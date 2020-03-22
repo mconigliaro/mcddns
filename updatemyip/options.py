@@ -5,7 +5,7 @@ import updatemyip.meta as meta
 import updatemyip.provider as pro
 
 
-def parse(args=None):
+def parse(default_address_providers=[], args=None):
     address_providers = pro.list_providers(pro.AddressProvider)
     address_provider_names = sorted(address_providers.keys())
     dns_providers = pro.list_providers(pro.DNSProvider)
@@ -56,7 +56,7 @@ def parse(args=None):
         subparser.add_argument(
             "--timeout",
             type=float,
-            default=10,
+            default=15,
             help="timeout for network requests"
         )
         subparser.add_argument(
@@ -96,9 +96,11 @@ def parse(args=None):
         parser.print_help()
         parser.exit(2)
 
-    for name, cls in {**address_providers, **dns_providers}.items():
-        if name in options.address_providers + [options.dns_provider]:
-            cls().options_post(parser, options)
+    if not options.address_providers:
+        options.address_providers = default_address_providers
+
+    for name in options.address_providers + [options.dns_provider]:
+        pro.get_provider(name)().options_post(parser, options)
 
     if options.dry_run:
         log_format = "[%(levelname)s] (DRY-RUN) %(message)s"

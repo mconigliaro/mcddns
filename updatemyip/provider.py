@@ -87,8 +87,8 @@ def list_providers(*types):
     }
 
 
-def init_provider(name, *args, **kwargs):
+def get_provider(name):
     try:
-        return list_providers()[name](*args, **kwargs)
+        return list_providers()[name]
     except KeyError:
         raise exc.NoSuchProviderError(f"No such provider: {name}")

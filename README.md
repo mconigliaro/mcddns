@@ -5,22 +5,38 @@ Industrial-strength dynamic DNS client
 ## Features
 
 - Extensible plugin-oriented architecture
-- Built-in provider result validation
-- Provider redundancy with optional retry and Fibonacci backoff
+- Built-in address provider result validation
+- Address provider redundancy with optional retry and Fibonacci backoff
 - Detailed logging
 - Dry-run mode
 
-### To Do
+### Built-In Providers
 
-- How to determine default address providers?
-- Add version info for providers
-- Improve provider exception handling
-- Add docs
-- Add tests for built-in providers?
+#### Address
+
+Address providers are responsible for obtaining an address.
+
+- `aws.CheckIP`: https://checkip.amazonaws.com/
+- `dyn.CheckIP`: http://checkip.dyndns.com/
+- `google.CheckIP`: https://domains.google.com/checkip
+- `ipify.Ipv4`: https://api.ipify.org/
+- `ipify.Ipv6`: https://api6.ipify.org/
+
+#### DNS
+
+DNS providers are responsible for managing DNS records.
+
+- `aws.Route53`: Manages [Route53](https://aws.amazon.com/route53/) DNS records
 
 ## Installation
 
 FIXME
+
+## Running the Application
+
+    updatemyip <dns_provider> <fqdn> [options]
+
+Use `--help` to see available options.
 
 ## Development
 
@@ -35,12 +51,17 @@ FIXME
 
     pytest
 
-## Running the Application
-
-Use `--help` to see available options.
-
-    updatemyip
-
 ### Writing Providers
 
-FIXME: See [updatemyip/providers](updatemyip/providers) and [tests/providers](tests/providers) for now.
+In production mode, Python modules/packages prefixed with `updatemyip_` will automatically be loaded from the following locations:
+
+1. `$XDG_CONFIG_HOME/updatemyip/providers`
+1. `/etc/updatemyip/providers`
+1. [updatemyip/providers](updatemyip/providers)
+
+FIXME: Need more docs
+
+### To Do
+
+- Improve provider exception handling
+- Add tests for built-in providers
