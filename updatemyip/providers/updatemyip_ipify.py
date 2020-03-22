@@ -1,5 +1,3 @@
-import requests as req
-import updatemyip.exceptions as exc
 import updatemyip.provider as pro
 import updatemyip.validator as val
 
@@ -7,21 +5,13 @@ import updatemyip.validator as val
 class IPv4(pro.AddressProvider):
 
     def fetch(self, options):
-        try:
-            return req.get("https://api.ipify.org/",
-                           timeout=options.timeout).text
-        except req.exceptions.RequestException as e:
-            raise exc.ProviderError(e) from e
+        return self._fetch_url(options, "https://api.ipify.org/")
 
 
 class IPv6(pro.AddressProvider):
 
     def fetch(self, options):
-        try:
-            return req.get("https://api6.ipify.org/",
-                           timeout=options.timeout).text
-        except req.exceptions.RequestException as e:
-            raise exc.ProviderError(e) from e
+        return self._fetch_url(options, "https://api6.ipify.org/")
 
     def validate(self, options, address):
         return val.ip_address(address)

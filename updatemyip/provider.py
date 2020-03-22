@@ -4,6 +4,7 @@ import inspect as ins
 import logging as log
 import os
 import pkgutil as pu
+import requests as req
 import sys
 import updatemyip.exceptions as exc
 import updatemyip.meta as meta
@@ -32,6 +33,12 @@ class Provider(abc.ABC):
 
 
 class AddressProvider(Provider):
+
+    def _fetch_url(self, options, url):
+        try:
+            return req.get(url, timeout=options.timeout).text.strip()
+        except req.exceptions.RequestException as e:
+            raise exc.ProviderError(e) from e
 
     @abc.abstractmethod
     def fetch(self, options):

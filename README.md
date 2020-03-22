@@ -19,8 +19,8 @@ Address providers are responsible for obtaining an address.
 - `aws.CheckIP`: https://checkip.amazonaws.com/
 - `dyn.CheckIP`: http://checkip.dyndns.com/
 - `google.CheckIP`: https://domains.google.com/checkip
-- `ipify.Ipv4`: https://api.ipify.org/
-- `ipify.Ipv6`: https://api6.ipify.org/
+- `ipify.IPv4`: https://api.ipify.org/
+- `ipify.IPv6`: https://api6.ipify.org/
 
 #### DNS
 
