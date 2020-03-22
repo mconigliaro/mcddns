@@ -4,13 +4,11 @@ import inspect as ins
 import logging as log
 import os
 import pkgutil as pu
-import requests as req
 import sys
 import updatemyip.exceptions as exc
 import updatemyip.meta as meta
 import updatemyip.util as util
-import updatemyip.validator as val
-
+import updatemyip.provider_util as pru
 PROVIDER_MODULE_BUILTIN_PATH = os.path.join(
     os.path.dirname(__file__),
     "providers"
@@ -34,18 +32,12 @@ class Provider(abc.ABC):
 
 class AddressProvider(Provider):
 
-    def _fetch_url(self, options, url):
-        try:
-            return req.get(url, timeout=options.timeout).text.strip()
-        except req.exceptions.RequestException as e:
-            raise exc.ProviderError(e) from e
-
     @abc.abstractmethod
     def fetch(self, options):
         pass
 
     def validate(self, options, address):
-        return val.ipv4_address(address)
+        return pru.is_ipv4_address(address)
 
 
 class DNSProvider(Provider):

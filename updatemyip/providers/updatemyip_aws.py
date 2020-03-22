@@ -4,12 +4,16 @@ import botocore.exceptions as be
 import logging as log
 import updatemyip.exceptions as exc
 import updatemyip.provider as pro
+import updatemyip.provider_util as pru
 
 
 class CheckIP(pro.AddressProvider):
 
     def fetch(self, options):
-        return self._fetch_url(options, "https://checkip.amazonaws.com/")
+        return pru.fetch_url(
+            "https://checkip.amazonaws.com/",
+            timeout=options.timeout
+        )
 
 
 class Route53(pro.DNSProvider):

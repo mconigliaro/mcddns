@@ -1,17 +1,23 @@
 import updatemyip.provider as pro
-import updatemyip.validator as val
+import updatemyip.provider_util as pru
 
 
 class IPv4(pro.AddressProvider):
 
     def fetch(self, options):
-        return self._fetch_url(options, "https://api.ipify.org/")
+        return pru.fetch_url(
+            "https://api.ipify.org/",
+            timeout=options.timeout
+        )
 
 
 class IPv6(pro.AddressProvider):
 
     def fetch(self, options):
-        return self._fetch_url(options, "https://api6.ipify.org/")
+        return pru.fetch_url(
+            "https://api6.ipify.org/",
+            timeout=options.timeout
+        )
 
     def validate(self, options, address):
-        return val.ip_address(address)
+        return pru.is_ip_address(address)

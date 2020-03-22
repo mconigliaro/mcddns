@@ -1,6 +1,17 @@
 import itertools as it
 import pytest as pt
-import updatemyip.validator as val
+import updatemyip.provider_util as pru
+
+
+@pt.mark.parametrize(
+    "url, result",
+    [
+        ["http://example.com/",
+         "The requested URL was not found on this server."]
+    ]
+)
+def test_fetch_url(url, result):
+    assert pru.fetch_url(url) == result
 
 
 @pt.mark.parametrize(
@@ -11,8 +22,8 @@ import updatemyip.validator as val
         ["test", False]
     ]
 )
-def test_ip_address(value, result):
-    assert val.ip_address(value) == result
+def test_is_ip_address(value, result):
+    assert pru.is_ip_address(value) == result
 
 
 @pt.mark.parametrize(
@@ -23,8 +34,8 @@ def test_ip_address(value, result):
         ["test", False]
     ]
 )
-def test_ipv4_address(value, result):
-    assert val.ipv4_address(value) == result
+def test_is_ipv4_address(value, result):
+    assert pru.is_ipv4_address(value) == result
 
 
 @pt.mark.parametrize(
@@ -35,8 +46,8 @@ def test_ipv4_address(value, result):
         ["test", False]
     ]
 )
-def test_ipv6_address(value, result):
-    assert val.ipv6_address(value) == result
+def test_is_ipv6_address(value, result):
+    assert pru.is_ipv6_address(value) == result
 
 
 @pt.mark.parametrize(
@@ -47,5 +58,5 @@ def test_ipv6_address(value, result):
         ["fail!", False]
     ]
 )
-def test_hostname(value, result):
-    assert val.hostname(value) == result
+def test_is_hostname(value, result):
+    assert pru.is_hostname(value) == result

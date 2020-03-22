@@ -1,9 +1,18 @@
 import ipaddress as ip
 import logging as log
 import re
+import requests as req
+import updatemyip.exceptions as exc
 
 
-def ip_address(value):
+def fetch_url(url, timeout=15):
+    try:
+        return req.get(url, timeout=timeout).text.strip()
+    except req.exceptions.RequestException as e:
+        raise exc.ProviderError(e) from e
+
+
+def is_ip_address(value):
     try:
         ip.ip_address(value)
         log.debug(f"Valid IP address: {value}")
@@ -13,7 +22,7 @@ def ip_address(value):
         return False
 
 
-def ipv4_address(value):
+def is_ipv4_address(value):
     try:
         if ip.ip_address(value).version == 4:
             log.debug(f"Valid IPv4 address: {value}")
@@ -25,7 +34,7 @@ def ipv4_address(value):
         return False
 
 
-def ipv6_address(value):
+def is_ipv6_address(value):
     try:
         if ip.ip_address(value).version == 6:
             log.debug(f"Valid IPv6 address: {value}")
@@ -37,7 +46,7 @@ def ipv6_address(value):
         return False
 
 
-def hostname(value):
+def is_hostname(value):
     if len(value) > 255:
         result = False
     else:
