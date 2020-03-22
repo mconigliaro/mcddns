@@ -1,4 +1,3 @@
-import updatemyip.exceptions as exc
 import updatemyip.provider as pro
 
 
@@ -17,7 +16,7 @@ class AddressFalse(pro.AddressProvider):
 class AddressError(pro.AddressProvider):
 
     def fetch(self, options):
-        raise exc.ProviderError("Test")
+        raise Exception("Test")
 
 
 class DNS(pro.DNSProvider):
@@ -44,7 +43,7 @@ class DNSCheckFalse(pro.DNSProvider):
 class DNSCheckError(pro.DNSProvider):
 
     def check(self, options, address):
-        raise exc.ProviderError("Test")
+        raise Exception("Test")
 
     def update(self, options, address):
         return True

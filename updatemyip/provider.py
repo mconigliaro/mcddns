@@ -9,6 +9,7 @@ import updatemyip.exceptions as exc
 import updatemyip.meta as meta
 import updatemyip.util as util
 import updatemyip.provider_util as pru
+
 PROVIDER_MODULE_BUILTIN_PATH = os.path.join(
     os.path.dirname(__file__),
     "providers"
@@ -69,14 +70,14 @@ def provider_full_name(obj):
 
 
 def list_providers(*types):
-    valid_types = [AddressProvider, DNSProvider]
+    valid_types = Provider.__subclasses__()
 
     if not [t for t in types if t]:
         types = valid_types
     else:
         invalid_types = [str(t) for t in types if t not in valid_types]
         if invalid_types:
-            raise exc.InvalidProviderTypeError(
+            raise exc.NoSuchProviderTypeError(
                 f"Invalid provider types: {', '.join(invalid_types)}"
             )
 

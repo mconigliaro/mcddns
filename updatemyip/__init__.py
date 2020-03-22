@@ -1,6 +1,5 @@
 import itertools as it
 import logging as log
-import updatemyip.exceptions as exc
 import updatemyip.options as opt
 import updatemyip.provider as pro
 import updatemyip.util as util
@@ -25,8 +24,6 @@ def main(default_address_providers=[], args=None):
             log.info(f"Got address: {address}")
             if provider.call("validate", opts, address):
                 break
-        except exc.ProviderError as e:
-            log.error(e)
         except Exception as e:
             log.exception(e)
     else:
@@ -53,8 +50,6 @@ def main(default_address_providers=[], args=None):
             else:
                 log.info(f"No DNS update required")
                 return RETURN_CODE_NOOP
-        except exc.ProviderError as e:
-            log.error(e)
         except Exception as e:
             log.exception(e)
     else:

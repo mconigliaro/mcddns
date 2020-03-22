@@ -1,8 +1,6 @@
 import boto3
 import botocore.client as bc
-import botocore.exceptions as be
 import logging as log
-import updatemyip.exceptions as exc
 import updatemyip.provider as pro
 import updatemyip.provider_util as pru
 
@@ -41,18 +39,15 @@ class Route53(pro.DNSProvider):
 
         self.changes = []
 
-        try:
-            config = bc.Config(connect_timeout=options.timeout,
-                               retries={'max_attempts': 0})
-            self.client = boto3.client("route53", config=config)
-            rrsets = self.client.list_resource_record_sets(
-                HostedZoneId=options.hosted_zone_id,
-                StartRecordName=fqdn,
-                MaxItems="1",
-            )["ResourceRecordSets"]
+        config = bc.Config(connect_timeout=options.timeout,
+                           retries={'max_attempts': 0})
+        self.client = boto3.client("route53", config=config)
 
-        except (be.ConnectionError, be.ClientError) as e:
-            raise exc.ProviderError(e) from e
+        rrsets = self.client.list_resource_record_sets(
+            HostedZoneId=options.hosted_zone_id,
+            StartRecordName=fqdn,
+            MaxItems="1",
+        )["ResourceRecordSets"]
 
         if rrsets and rrsets[0]["Name"] == fqdn:
             cur_name = rrsets[0]["Name"].rstrip(".")
@@ -88,13 +83,9 @@ class Route53(pro.DNSProvider):
         return True
 
     def update(self, options, address):
-        try:
-            self.client.change_resource_record_sets(
-                HostedZoneId=options.hosted_zone_id,
-                ChangeBatch={"Changes": self.changes},
-            )
-
-        except (be.ConnectionError, be.ClientError) as e:
-            raise exc.ProviderError(e) from e
+        self.client.change_resource_record_sets(
+            HostedZoneId=options.hosted_zone_id,
+            ChangeBatch={"Changes": self.changes},
+        )
 
         return True

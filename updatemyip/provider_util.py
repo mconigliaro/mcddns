@@ -2,14 +2,14 @@ import ipaddress as ip
 import logging as log
 import re
 import requests as req
-import updatemyip.exceptions as exc
 
 
 def fetch_url(url, timeout=15):
     try:
         return req.get(url, timeout=timeout).text.strip()
     except req.exceptions.RequestException as e:
-        raise exc.ProviderError(e) from e
+        log.error(e)
+        return None
 
 
 def is_ip_address(value):

@@ -38,7 +38,7 @@ def test_list_providers(types, providers):
 
 
 def test_list_providers_invalid():
-    with pt.raises(exc.InvalidProviderTypeError):
+    with pt.raises(exc.NoSuchProviderTypeError):
         pro.list_providers(int)
 
 

@@ -2,13 +2,9 @@ class UpdateMyIpError(Exception):
     pass
 
 
-class InvalidProviderTypeError(UpdateMyIpError):
+class NoSuchProviderTypeError(UpdateMyIpError):
     pass
 
 
 class NoSuchProviderError(UpdateMyIpError):
-    pass
-
-
-class ProviderError(UpdateMyIpError):
     pass
