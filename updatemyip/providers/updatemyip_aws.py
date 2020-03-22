@@ -15,7 +15,18 @@ class CheckIP(pro.AddressProvider):
 class Route53(pro.DNSProvider):
 
     def options_pre(self, parser):
-        parser.add_argument("hosted_zone_id")
+        parser.add_argument(
+            "hosted_zone_id",
+            help="aws route53 hosted zone id"
+        )
+        parser.add_argument(
+            "--boto-log",
+            action="store_true",
+            help="show log messages from boto"
+        )
+
+    def options_post(self, parser, options):
+        log.getLogger("botocore").propagate = options.boto_log
 
     def check(self, options, address):
         if options.fqdn.endswith("."):

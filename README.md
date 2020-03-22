@@ -16,21 +16,21 @@ Industrial-strength dynamic DNS client
 
 Address providers are responsible for obtaining an address.
 
-- `aws.CheckIP`: https://checkip.amazonaws.com/
-- `dyn.CheckIP`: http://checkip.dyndns.com/
-- `google.CheckIP`: https://domains.google.com/checkip
-- `ipify.IPv4`: https://api.ipify.org/
-- `ipify.IPv6`: https://api6.ipify.org/
+- `aws.CheckIP`: URL provided by [Amazon Web Services](https://aws.amazon.com/)
+- `dyn.CheckIP`: URL provided by [Dyn](https://dyn.com/)
+- `google.CheckIP`: URL provided by [Google Domains](https://domains.google.com)
+- `ipify.IPv4`: URL provided by [ipify](https://www.ipify.org/)
+- `ipify.IPv6`: URL provided by [ipify](https://www.ipify.org/) (IPv6)
 
 #### DNS
 
-DNS providers are responsible for managing DNS records.
+DNS providers are responsible for managing a DNS record.
 
-- `aws.Route53`: Manages [Route53](https://aws.amazon.com/route53/) DNS records
+- `aws.Route53`: Uses [Amazon Route53](https://aws.amazon.com/route53/)
 
 ## Installation
 
-FIXME
+    pip install updatemyip
 
 ## Running the Application
 
@@ -53,13 +53,13 @@ Use `--help` to see available options.
 
 ### Writing Providers
 
-In production mode, Python modules/packages prefixed with `updatemyip_` will automatically be loaded from the following locations:
+In production mode, Python modules/packages prefixed with `updatemyip_` will automatically be imported from the following locations:
 
 1. `$XDG_CONFIG_HOME/updatemyip/providers`
 1. `/etc/updatemyip/providers`
-1. [updatemyip/providers](updatemyip/providers)
+1. [sys.path](https://docs.python.org/3/library/sys.html#sys.path)
 
-FIXME: Need more docs
+I'll write more documentation if people are interested, but for now, see the examples at [updatemyip/providers](updatemyip/providers) and [tests/providers](tests/providers).
 
 ### To Do
 

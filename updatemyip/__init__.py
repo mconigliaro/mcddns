@@ -19,7 +19,7 @@ def main(default_address_providers=[], args=None):
     providers = it.product(range(opts.retry + 1), addr_providers.items())
     for i, (provider_i, (provider_name, provider)) in enumerate(providers):
         util.backoff(i, max_retries=opts.retry, no_delay=opts.no_backoff)
-        log.debug(f"Trying address provider: {provider_name}")
+        log.info(f"Using address provider: {provider_name}")
         try:
             address = provider.call("fetch", opts)
             log.info(f"Got address: {address}")
@@ -38,7 +38,7 @@ def main(default_address_providers=[], args=None):
     provider = pro.get_provider(opts.dns_provider)()
     for i in range(opts.retry + 1):
         util.backoff(i, max_retries=opts.retry, no_delay=opts.no_backoff)
-        log.debug(f"Trying DNS provider: {opts.dns_provider}")
+        log.info(f"Using DNS provider: {opts.dns_provider}")
         try:
             if provider.call("check", opts, address):
                 if opts.dry_run:

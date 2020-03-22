@@ -25,7 +25,7 @@ def backoff(retry, max_retries=None, no_delay=False):
     if not no_delay and retry:
         if max_retries:
             counter = f"{retry}/{max_retries}"
-            msg = f"[{counter}] Retrying in {delay}s..."
+            msg = f"Retrying ({counter}) in {delay}s..."
         else:
             msg = f"Retrying in {delay}s..."
         log.info(msg)
