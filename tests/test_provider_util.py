@@ -3,15 +3,8 @@ import pytest as pt
 import updatemyip.provider_util as pru
 
 
-@pt.mark.parametrize(
-    "url, result",
-    [
-        ["http://example.com/",
-         "The requested URL was not found on this server."]
-    ]
-)
-def test_fetch_url(url, result):
-    assert pru.fetch_url(url) == result
+def test_fetch_url():
+    assert len(pru.fetch_url("http://example.com"))
 
 
 @pt.mark.parametrize(
