@@ -1,5 +1,7 @@
 # Update My IP
 
+[![updatemyip](https://circleci.com/gh/mconigliaro/updatemyip.svg?style=svg)](https://circleci.com/gh/mconigliaro/updatemyip)
+
 Industrial-strength dynamic DNS client
 
 ## Features
