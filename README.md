@@ -6,11 +6,30 @@ Industrial-strength dynamic DNS client
 
 ## Features
 
-- Extensible plugin-oriented architecture
-- Built-in address provider result validation
-- Address provider redundancy with optional retry and Fibonacci backoff
-- Detailed logging
-- Dry-run mode
+- Extensible plugin-oriented architecture with a simple API
+    - Address providers are responsible for obtaining an address
+    - DNS providers are responsible for managing a DNS record
+- Address provider features:
+    - Built-in result validation
+    - Optionally use multiple providers (keep trying until one succeeds)
+- All provider features:
+    - Optional retry with Fibonacci backoff
+    - Detailed logging
+    - Dry-run mode
+
+### Built-In Providers
+
+#### Address Providers
+
+- `aws.CheckIP`: Obtains a public IPv4 address via [Amazon Web Services](https://aws.amazon.com/)
+- `dyn.CheckIP`: Obtains a public IPv4 address via [Dyn](https://dyn.com/)
+- `google.CheckIP`: Obtains a public IPv4 address via [Google Domains](https://domains.google.com)
+- `ipify.IPv4`: Obtains a public IPv4 address via [ipify](https://www.ipify.org/)
+- `ipify.IPv6`: Obtains an IPv6 address via [ipify](https://www.ipify.org/)
+
+#### DNS Providers
+
+- `aws.Route53`: Manages records in [Amazon Route53](https://aws.amazon.com/route53/)
 
 ## Installation
 
@@ -21,24 +40,6 @@ Industrial-strength dynamic DNS client
     updatemyip <dns_provider> <fqdn> [options]
 
 Use `--help` to see available options.
-
-### Built-In Providers
-
-#### Address Providers
-
-Address providers are responsible for obtaining an address.
-
-- `aws.CheckIP`: URL provided by [Amazon Web Services](https://aws.amazon.com/)
-- `dyn.CheckIP`: URL provided by [Dyn](https://dyn.com/)
-- `google.CheckIP`: URL provided by [Google Domains](https://domains.google.com)
-- `ipify.IPv4`: URL provided by [ipify](https://www.ipify.org/)
-- `ipify.IPv6`: URL provided by [ipify](https://www.ipify.org/) (IPv6)
-
-#### DNS Providers
-
-DNS providers are responsible for managing a DNS record.
-
-- `aws.Route53`: Uses [Amazon Route53](https://aws.amazon.com/route53/)
 
 ## Development
 
@@ -61,7 +62,7 @@ A provider is any class that inherits from `AddressProvider` or `DNSProvider`. I
 1. `/etc/updatemyip/providers`
 1. [sys.path](https://docs.python.org/3/library/sys.html#sys.path)
 
-For example, if you create a file at `$XDG_CONFIG_HOME/updatemyip/providers/updatemyip_foo.py` with a class named `Bar` that inherits from one of the `Provider` subclasses, your module can be referenced (e.g. in command-line options) as `foo.Bar`.
+Example: If you create a file at `$XDG_CONFIG_HOME/updatemyip/providers/updatemyip_foo.py` with a class named `Bar` that inherits from one of the `Provider` subclasses, your module can be referenced (e.g. in command-line options) as `foo.Bar`.
 
 #### Provider Methods
 
@@ -70,7 +71,7 @@ Each provider type has a set of methods that will be called in a particular orde
 ##### All Providers
 
 1. `options_pre(parser)`: Runs before option parsing. Use this method to add your own provider-specific command line arguments (See: [argparse](https://docs.python.org/3.6/library/argparse.html)).
-1. `options_post(parser, options)`: Runs after option parsing. Use this method to verify your provider-specific command line arguments.
+1. `options_post(parser, options)`: Runs after option parsing. Use this method to do things with your provider-specific command line arguments.
 
 ##### Address Providers
 
@@ -89,9 +90,7 @@ I'll write more documentation if people are interested, but for now, see the exa
 #### Releases
 
 1. Bump `VERSION` in [updatemyip/meta.py](updatemyip/meta.py)
-
 1. Update [CHANGELOG.md](CHANGELOG.md)
-
 1. Run `release` script:
     ```
     release <version>
