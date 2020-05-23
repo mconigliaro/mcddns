@@ -91,10 +91,7 @@ I'll write more documentation if people are interested, but for now, see the exa
 
 1. Bump `VERSION` in [updatemyip/meta.py](updatemyip/meta.py)
 1. Update [CHANGELOG.md](CHANGELOG.md)
-1. Run `release` script:
-    ```
-    release <version>
-    ```
+1. Run `make release`
 
 ### To Do
 
