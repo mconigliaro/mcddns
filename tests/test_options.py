@@ -1,9 +1,9 @@
-import updatemyip.options as opt
+import updatemyip.options as options
 
 
 def test_parse():
     args = "test.DNS -a test.Address test.example.com"
-    opts = opt.parse(args=args.split())
+    opts = options.parse(args=args.split())
 
     assert opts.address_providers == ["test.Address"]
     assert opts.dns_provider == "test.DNS"

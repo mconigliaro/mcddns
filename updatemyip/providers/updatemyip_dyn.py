@@ -1,12 +1,12 @@
 import re
-import updatemyip.provider as pro
-import updatemyip.provider_util as pru
+import updatemyip.provider as provider
 
 
-class CheckIP(pro.AddressProvider):
+class CheckIP(provider.AddressProvider):
 
-    def fetch(self, options):
-        html = pru.fetch_url(
+    @classmethod
+    def fetch(cls, options):
+        html = cls.fetch_url(
             "http://checkip.dyndns.com/",
             timeout=options.timeout
         )

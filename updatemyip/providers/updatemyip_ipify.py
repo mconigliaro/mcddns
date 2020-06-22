@@ -1,23 +1,25 @@
-import updatemyip.provider as pro
-import updatemyip.provider_util as pru
+import updatemyip.provider as provider
 
 
-class IPv4(pro.AddressProvider):
+class IPv4(provider.AddressProvider):
 
-    def fetch(self, options):
-        return pru.fetch_url(
+    @classmethod
+    def fetch(cls, options):
+        return cls.fetch_url(
             "https://api.ipify.org/",
             timeout=options.timeout
         )
 
 
-class IPv6(pro.AddressProvider):
+class IPv6(provider.AddressProvider):
 
-    def fetch(self, options):
-        return pru.fetch_url(
+    @classmethod
+    def fetch(cls, options):
+        return cls.fetch_url(
             "https://api6.ipify.org/",
             timeout=options.timeout
         )
 
-    def validate(self, options, address):
-        return pru.is_ip_address(address)
+    @classmethod
+    def validate(cls, options, address):
+        return cls.is_ip_address(address)

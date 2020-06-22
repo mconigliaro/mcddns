@@ -1,11 +1,11 @@
-import updatemyip.provider as pro
-import updatemyip.provider_util as pru
+import updatemyip.provider as provider
 
 
-class CheckIP(pro.AddressProvider):
+class CheckIP(provider.AddressProvider):
 
-    def fetch(self, options):
-        return pru.fetch_url(
+    @classmethod
+    def fetch(cls, options):
+        return cls.fetch_url(
             "https://domains.google.com/checkip",
             timeout=options.timeout
         )

@@ -1,21 +1,24 @@
-import argparse as ap
-import logging as log
+import argparse
+import logging
 import sys
 import updatemyip.meta as meta
-import updatemyip.provider as pro
+import updatemyip.provider as provider
+
+
+log = logging.getLogger(__name__)
 
 
 def parse(default_address_providers=[], args=None):
-    address_providers = pro.list_providers(pro.AddressProvider)
-    address_provider_names = sorted(address_providers.keys())
-    dns_providers = pro.list_providers(pro.DNSProvider)
+    addr_providers = provider.list_providers(provider.AddressProvider)
+    addr_provider_names = sorted(addr_providers.keys())
+    dns_providers = provider.list_providers(provider.DNSProvider)
     dns_provider_names = sorted(dns_providers.keys())
 
-    parser = ap.ArgumentParser(
+    parser = argparse.ArgumentParser(
         prog=meta.NAME,
         epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})",
         # FIXME: https://bugs.python.org/issue27927
-        formatter_class=ap.ArgumentDefaultsHelpFormatter
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
         "-v",
@@ -25,7 +28,7 @@ def parse(default_address_providers=[], args=None):
     )
 
     subparsers = parser.add_subparsers(help='dns providers')
-    for dns_provider_name, dns_provider_cls in dns_providers.items():
+    for dns_provider_name, dns_provider in dns_providers.items():
         subparser = subparsers.add_parser(
             dns_provider_name,
             help=f"use the {dns_provider_name} provider"
@@ -37,7 +40,7 @@ def parse(default_address_providers=[], args=None):
         subparser.add_argument(
             "-a",
             "--address-providers",
-            choices=address_provider_names,
+            choices=addr_provider_names,
             default=[],
             action="append",
             help="provider(s) used to obtain an address"
@@ -56,7 +59,7 @@ def parse(default_address_providers=[], args=None):
         subparser.add_argument(
             "--timeout",
             type=float,
-            default=15,
+            default=3,
             help="timeout for network requests"
         )
         subparser.add_argument(
@@ -84,9 +87,9 @@ def parse(default_address_providers=[], args=None):
         )
 
         subparser.set_defaults(dns_provider=dns_provider_name)
-        dns_provider_cls().options_pre(subparser)
-        for addr_provider_name, addr_provider_cls in address_providers.items():
-            addr_provider_cls().options_pre(parser.add_argument_group(
+        dns_provider.options_pre(subparser)
+        for addr_provider_name, addr_provider in addr_providers.items():
+            addr_provider.options_pre(parser.add_argument_group(
                 f"{addr_provider_name} arguments")
             )
 
@@ -100,20 +103,20 @@ def parse(default_address_providers=[], args=None):
         options.address_providers = default_address_providers
 
     for name in options.address_providers + [options.dns_provider]:
-        pro.get_provider(name)().options_post(parser, options)
+        provider.get_provider(name)().options_post(parser, options)
 
     if options.dry_run:
         log_format = "[%(levelname)s] (DRY-RUN) %(message)s"
     else:
         log_format = "[%(levelname)s] %(message)s"
-    log_level = getattr(log, options.log_level.upper())
-    log.basicConfig(format=log_format, level=log_level)
+    log_level = getattr(logging, options.log_level.upper())
+    logging.basicConfig(format=log_format, level=log_level)
 
-    log.debug(f"Provider search paths: {', '.join(sys.path)}")
-    log.debug(f"Found address providers: {', '.join(address_provider_names)}")
-    log.debug(f"Found DNS providers: {', '.join(dns_provider_names)}")
-    options_str = ', '.join(f'{k}={repr(v)}'
-                            for k, v in sorted(vars(options).items()))
-    log.debug(f"Options: {options_str}")
+    log.debug("Provider search paths: %s", ', '.join(sys.path))
+    log.debug("Found address providers: %s", ', '.join(addr_provider_names))
+    log.debug("Found DNS providers: %s", ', '.join(dns_provider_names))
+    options_str = ', '.join(f'{k}={repr(v)}' for k, v in
+                            sorted(vars(options).items()))
+    log.debug("Options: %s", options_str)
 
     return options

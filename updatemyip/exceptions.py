@@ -1,10 +1,10 @@
-class UpdateMyIpError(Exception):
+class UpdateMyIPError(Exception):
     pass
 
 
-class NoSuchProviderTypeError(UpdateMyIpError):
+class NoSuchProviderTypeError(UpdateMyIPError):
     pass
 
 
-class NoSuchProviderError(UpdateMyIpError):
+class NoSuchProviderError(UpdateMyIPError):
     pass

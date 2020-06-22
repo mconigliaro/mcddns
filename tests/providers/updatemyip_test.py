@@ -1,58 +1,70 @@
-import updatemyip.provider as pro
+import updatemyip.provider as provider
 
 
-class Address(pro.AddressProvider):
+class Address(provider.AddressProvider):
 
-    def fetch(self, options):
+    @classmethod
+    def fetch(cls, options):
         return "127.0.0.1"
 
 
-class AddressFalse(pro.AddressProvider):
+class AddressFalse(provider.AddressProvider):
 
-    def fetch(self, options):
+    @classmethod
+    def fetch(cls, options):
         return "Test"
 
 
-class AddressError(pro.AddressProvider):
+class AddressError(provider.AddressProvider):
 
-    def fetch(self, options):
+    @classmethod
+    def fetch(cls, options):
         raise Exception("Test")
 
 
-class DNS(pro.DNSProvider):
+class DNS(provider.DNSProvider):
 
-    def check(self, options, address):
+    @classmethod
+    def check(cls, options, address):
         return True
 
-    def update(self, options, address):
+    @classmethod
+    def update(cls, options, address):
         return True
 
 
-class DNSCheckFalse(pro.DNSProvider):
+class DNSCheckFalse(provider.DNSProvider):
 
-    def options_pre(self, parser):
+    @classmethod
+    def options_pre(cls, parser):
         parser.add_argument("--test", action="store_true", required=True)
 
-    def check(self, options, address):
+    @classmethod
+    def check(cls, options, address):
         return False
 
-    def update(self, options, address):
+    @classmethod
+    def update(cls, options, address):
         return True
 
 
-class DNSCheckError(pro.DNSProvider):
+class DNSCheckError(provider.DNSProvider):
 
-    def check(self, options, address):
+    @classmethod
+    def check(cls, options, address):
         raise Exception("Test")
 
-    def update(self, options, address):
+    @classmethod
+    def update(cls, options, address):
         return True
 
 
-class DNSUpdateFalse(pro.DNSProvider):
+class DNSUpdateFalse(provider.DNSProvider):
 
-    def check(self, options, address):
+    @classmethod
+    def check(cls, options, address):
         return True
 
-    def update(self, options, address):
+    @classmethod
+    def update(cls, options, address):
         return False
