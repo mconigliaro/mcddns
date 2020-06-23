@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## 1.0.0: 2020-06-23
 - Make provider methods class methods (API change)
 - Move provider utils into provider classes (API change)
 - Fix bug where booleans were recognized as IP addresses

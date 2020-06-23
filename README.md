@@ -9,13 +9,12 @@ Industrial-strength dynamic DNS client
 - Extensible plugin-oriented architecture with a simple API
     - Address providers are responsible for obtaining an address
     - DNS providers are responsible for managing a DNS record
-- Address provider features:
-    - Built-in result validation
-    - Optionally use multiple providers (keep trying until one succeeds)
-- All provider features:
-    - Optional retry with Fibonacci backoff
-    - Detailed logging
-    - Dry-run mode
+- Built-in result validation for address providers (guards against problematic endpoints)
+- Use multiple address providers (keep trying until one succeeds)
+- Optional retry with Fibonacci backoff
+- Detailed logging
+- Dry-run mode (shows what will happen without changing anything)
+- Cron mode (prevents email flood if your Internet connections goes down)
 
 ### Built-In Providers
 
