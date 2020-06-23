@@ -8,15 +8,11 @@ import updatemyip.provider as provider
 
 RETURN_CODE_DRY_RUN = 100
 RETURN_CODE_DNS_NOOP = 101
-
 RETURN_CODE_DNS_UPDATED = 201
-
 RETURN_CODE_ADDRESS_ERROR = 300
 RETURN_CODE_DNS_ERROR = 301
 
-RETURN_CODES_NOOP = range(100, 200)
-RETURN_CODES_SUCCESS = range(200, 300)
-RETURN_CODES_ERROR = range(300, 400)
+RETURN_CODES_SUCCESS = range(100, 300)
 
 CRON_IGNORE_RETURN_CODE_CLASS_TRANSITIONS = (
     (None, 1),
@@ -174,9 +170,9 @@ def return_code_class_transition(return_code1, return_code2):
 
 
 def exit_code(return_code, cron=False, state_path=STATE_PATH):
-    if return_code in RETURN_CODES_NOOP or return_code in RETURN_CODES_SUCCESS:
+    if return_code in RETURN_CODES_SUCCESS:
         exit_code = EXIT_CODE_SUCCESS
-    elif return_code in RETURN_CODES_ERROR:
+    else:
         exit_code = EXIT_CODE_ERROR
 
     if cron:

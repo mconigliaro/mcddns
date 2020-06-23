@@ -73,33 +73,36 @@ def test_iterate_with_retry():
     assert result == ["a", "b", "c", "a", "b", "c", "a", "b", "c"]
 
 
-def test_state_read_none(test_state_none):
-    assert not updatemyip.state_read(test_state_none)
+def test_state_read_missing(test_state):
+    updatemyip.state_remove(path=test_state)
+    assert not updatemyip.state_read(test_state)
 
 
-def test_state_read(test_state_success):
-    state = updatemyip.state_read(test_state_success)
-    assert len(state) > 0
+def test_state_read(test_state):
+    state = updatemyip.state_read(test_state)
+    assert state == ""
 
 
-def test_state_write_none(test_state_none):
+def test_state_write_missing(test_state):
+    updatemyip.state_remove(path=test_state)
     data = "123"
-    assert updatemyip.state_write(data, path=test_state_none)
-    assert updatemyip.state_read(path=test_state_none) == data
+    updatemyip.state_write(data, path=test_state)
+    assert updatemyip.state_read(path=test_state) == data
 
 
-def test_state_write(test_state_success):
+def test_state_write(test_state):
     data = "456"
-    assert updatemyip.state_write(data, path=test_state_success)
-    assert updatemyip.state_read(path=test_state_success) == data
+    updatemyip.state_write(data, path=test_state)
+    assert updatemyip.state_read(path=test_state) == data
 
 
-def test_state_remove_none(test_state_none):
-    assert updatemyip.state_remove(test_state_none)
+def test_state_remove_missing(test_state):
+    updatemyip.state_remove(path=test_state)
+    assert updatemyip.state_remove(test_state)
 
 
-def test_state_remove_success(test_state_success):
-    assert updatemyip.state_remove(test_state_success)
+def test_state_remove(test_state):
+    assert updatemyip.state_remove(test_state)
 
 
 @pytest.mark.parametrize(
@@ -122,3 +125,29 @@ def test_return_code_class(rc, rc_class):
 )
 def test_return_code_class_transition(rc1, rc2, transition):
     assert updatemyip.return_code_class_transition(rc1, rc2) == transition
+
+
+@pytest.mark.parametrize(
+    "return_codes, cron, exit_code",
+    [
+        [("", 100), False, 0],
+        [("", 200), False, 0],
+        [("", 300), False, 1],
+
+        [("", 100), True, 0],
+        [("", 200), True, 1],
+        [("", 300), True, 1],
+        [(100, 100), True, 0],
+        [(100, 200), True, 1],
+        [(100, 300), True, 1],
+        [(200, 100), True, 0],
+        [(200, 200), True, 1],
+        [(200, 300), True, 1],
+        [(300, 100), True, 1],
+        [(300, 200), True, 1],
+        [(300, 300), True, 0]
+    ]
+)
+def test_exit_code(return_codes, cron, test_state, exit_code):
+    updatemyip.state_write(return_codes[0], path=test_state)
+    assert updatemyip.exit_code(return_codes[1], cron, test_state) == exit_code
