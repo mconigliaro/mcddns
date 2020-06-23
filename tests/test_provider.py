@@ -13,7 +13,9 @@ def test_fetch_url():
     [
         ["127.0.0.1", True],
         ["::1", True],
-        ["test", False]
+        ["test", False],
+        [True, False],
+        [False, False]
     ]
 )
 def test_is_ip_address(value, result):
@@ -25,7 +27,9 @@ def test_is_ip_address(value, result):
     [
         ["127.0.0.1", True],
         ["::1", False],
-        ["test", False]
+        ["test", False],
+        [True, False],
+        [False, False]
     ]
 )
 def test_is_ipv4_address(value, result):
@@ -37,7 +41,9 @@ def test_is_ipv4_address(value, result):
     [
         ["::1", True],
         ["127.0.0.1", False],
-        ["test", False]
+        ["test", False],
+        [True, False],
+        [False, False]
     ]
 )
 def test_is_ipv6_address(value, result):

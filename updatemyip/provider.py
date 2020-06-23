@@ -55,6 +55,7 @@ class AddressProvider(Provider):
 
     @staticmethod
     def is_ip_address(value):
+        value = str(value)
         try:
             ipaddress.ip_address(value)
             log.debug("Valid IP address: %s", value)
@@ -65,6 +66,7 @@ class AddressProvider(Provider):
 
     @staticmethod
     def is_ipv4_address(value):
+        value = str(value)
         try:
             if ipaddress.ip_address(value).version == 4:
                 log.debug("Valid IPv4 address: %s", value)
@@ -77,6 +79,7 @@ class AddressProvider(Provider):
 
     @staticmethod
     def is_ipv6_address(value):
+        value = str(value)
         try:
             if ipaddress.ip_address(value).version == 6:
                 log.debug("Valid IPv6 address: %s", value)

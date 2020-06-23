@@ -4,6 +4,7 @@ import os
 import random
 import updatemyip
 import updatemyip.meta as meta
+import updatemyip.options as options
 import updatemyip.provider as provider
 
 xdg_config_home = os.getenv(
@@ -21,7 +22,7 @@ default_address_providers = [
     "ipify.IPv4"
 ]
 random.shuffle(default_address_providers)
-exit_code = updatemyip.main(
-    default_address_providers=default_address_providers
-)
-exit(0) if exit_code < 0 else exit(exit_code)
+
+opts = options.parse(default_address_providers)
+return_code = updatemyip.main(opts)
+exit(updatemyip.exit_code(return_code, cron=opts.cron))

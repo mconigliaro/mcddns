@@ -74,6 +74,11 @@ def parse(default_address_providers=[], args=None):
             help="disable fibonacci backoff for failed providers"
         )
         subparser.add_argument(
+            "--cron",
+            action="store_true",
+            help="use exit codes suitable for cron"
+        )
+        subparser.add_argument(
             "--dry-run",
             action="store_true",
             help="show what will happen without making changes"

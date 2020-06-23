@@ -1,20 +1,40 @@
 import itertools
 import logging
+import os
+import tempfile
 import time
-import updatemyip.options as options
+import updatemyip.meta as meta
 import updatemyip.provider as provider
 
-RETURN_CODE_DRY_RUN = -2
-RETURN_CODE_NOOP = -1
-RETURN_CODE_SUCCESS = 0
-RETURN_CODE_ERROR_ADDRESS = 1
-RETURN_CODE_ERROR_DNS = 2
+RETURN_CODE_DRY_RUN = 100
+RETURN_CODE_DNS_NOOP = 101
+
+RETURN_CODE_DNS_UPDATED = 201
+
+RETURN_CODE_ADDRESS_ERROR = 300
+RETURN_CODE_DNS_ERROR = 301
+
+RETURN_CODES_NOOP = range(100, 200)
+RETURN_CODES_SUCCESS = range(200, 300)
+RETURN_CODES_ERROR = range(300, 400)
+
+CRON_IGNORE_RETURN_CODE_CLASS_TRANSITIONS = (
+    (None, 1),
+    (1, 1),
+    (2, 1),
+    (3, 3)
+)
+
+EXIT_CODE_SUCCESS = 0
+EXIT_CODE_ERROR = 1
+
+STATE_PATH = os.path.join(tempfile.gettempdir(), f"{meta.NAME}.state")
+
 
 log = logging.getLogger(__name__)
 
 
-def main(default_address_providers=[], args=None):
-    opts = options.parse(default_address_providers, args)
+def main(opts):
     tries = opts.retry + 1
 
     addr_providers = {p: provider.get_provider(p)
@@ -36,7 +56,7 @@ def main(default_address_providers=[], args=None):
     else:
         addr_provider_names = ', '.join(addr_providers.keys())
         log.critical("All address providers failed: %s", addr_provider_names)
-        return RETURN_CODE_ERROR_ADDRESS
+        return RETURN_CODE_ADDRESS_ERROR
 
     desired_record = f"{opts.fqdn} {opts.ttl} {opts.rrtype} {address}"
 
@@ -55,17 +75,17 @@ def main(default_address_providers=[], args=None):
                 else:
                     if provider_cls.update(opts, address):
                         log.info("DNS updated: %s", desired_record)
-                        return RETURN_CODE_SUCCESS
+                        return RETURN_CODE_DNS_UPDATED
                     else:
                         log.error("DNS update failed")
             else:
                 log.info("No DNS update required")
-                return RETURN_CODE_NOOP
+                return RETURN_CODE_DNS_NOOP
         except Exception as e:
             log.exception(e)
     else:
         log.critical("DNS provider failed: %s", opts.dns_provider)
-        return RETURN_CODE_ERROR_DNS
+        return RETURN_CODE_DNS_ERROR
 
 
 def fibonacci(n):
@@ -91,5 +111,88 @@ def iterate_with_retry(iterable, tries=3, no_backoff=False):
                 delay = fibonacci(i)[1]
                 log.info("Retrying (%d/%d) in %ds...", i, retries, delay)
                 time.sleep(delay)
-
         yield obj
+
+
+def state_exists(path=STATE_PATH):
+    exists = os.path.isfile(path)
+    if exists:
+        log.debug("Found previous state: %s", path)
+    else:
+        log.debug("No previous state found: %s", path)
+    return exists
+
+
+def state_read(path=STATE_PATH):
+    if state_exists(path):
+        try:
+            with open(path, 'r') as f:
+                data = f.read()
+                log.debug("Read state: %s", data)
+            return data
+        except OSError as e:
+            log.error("Unable to read state: %s", e)
+            return ""
+    else:
+        return ""
+
+
+def state_write(data, path=STATE_PATH):
+    try:
+        with open(path, 'w') as f:
+            log.debug("Writing state: %s", data)
+            f.write(str(data))
+        return True
+    except OSError as e:
+        log.error("Unable to write state: %s", e)
+        return False
+
+
+def state_remove(path=STATE_PATH):
+    if state_exists(path):
+        try:
+            log.debug("Removing previous state: %s", path)
+            os.remove(path)
+        except OSError as e:
+            log.error("Unable to remove state: %s", e)
+            return False
+    return True
+
+
+def return_code_class(return_code):
+    try:
+        return int(str(return_code)[0])
+    except IndexError:
+        None
+
+
+def exit_code(return_code, cron=False, state_path=STATE_PATH):
+    if return_code in RETURN_CODES_NOOP or return_code in RETURN_CODES_SUCCESS:
+        exit_code = EXIT_CODE_SUCCESS
+    elif return_code in RETURN_CODES_ERROR:
+        exit_code = EXIT_CODE_ERROR
+
+    if cron:
+        previous_return_code = state_read(state_path)
+        if str(return_code) != previous_return_code:
+            state_write(return_code, path=state_path)
+
+        transition = (
+            return_code_class(previous_return_code),
+            return_code_class(return_code)
+        )
+        if transition in CRON_IGNORE_RETURN_CODE_CLASS_TRANSITIONS:
+            cron_exit_code = EXIT_CODE_SUCCESS
+        else:
+            cron_exit_code = EXIT_CODE_ERROR
+
+        if cron_exit_code == exit_code:
+            log.debug("Exit code: %d", exit_code)
+        else:
+            log.debug(
+                "Rewriting exit code for cron: %d => %d",
+                exit_code, cron_exit_code
+            )
+            exit_code = cron_exit_code
+
+    return exit_code
