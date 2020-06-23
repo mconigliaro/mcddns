@@ -100,3 +100,25 @@ def test_state_remove_none(test_state_none):
 
 def test_state_remove_success(test_state_success):
     assert updatemyip.state_remove(test_state_success)
+
+
+@pytest.mark.parametrize(
+    "rc, rc_class",
+    [
+        ["", None],
+        [100, 1],
+    ]
+)
+def test_return_code_class(rc, rc_class):
+    assert updatemyip.return_code_class(rc) == rc_class
+
+
+@pytest.mark.parametrize(
+    "rc1, rc2, transition",
+    [
+        [100, 200, (1, 2)],
+        [300, 400, (3, 4)]
+    ]
+)
+def test_return_code_class_transition(rc1, rc2, transition):
+    assert updatemyip.return_code_class_transition(rc1, rc2) == transition
