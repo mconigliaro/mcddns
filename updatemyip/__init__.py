@@ -166,6 +166,13 @@ def return_code_class(return_code):
         None
 
 
+def return_code_class_transition(return_code1, return_code2):
+    return (
+        return_code_class(return_code1),
+        return_code_class(return_code2)
+    )
+
+
 def exit_code(return_code, cron=False, state_path=STATE_PATH):
     if return_code in RETURN_CODES_NOOP or return_code in RETURN_CODES_SUCCESS:
         exit_code = EXIT_CODE_SUCCESS
@@ -177,9 +184,9 @@ def exit_code(return_code, cron=False, state_path=STATE_PATH):
         if str(return_code) != previous_return_code:
             state_write(return_code, path=state_path)
 
-        transition = (
-            return_code_class(previous_return_code),
-            return_code_class(return_code)
+        transition = return_code_class_transition(
+            previous_return_code,
+            return_code
         )
         if transition in CRON_IGNORE_RETURN_CODE_CLASS_TRANSITIONS:
             cron_exit_code = EXIT_CODE_SUCCESS
