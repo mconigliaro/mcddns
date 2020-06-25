@@ -1,7 +1,7 @@
 import boto3
 import botocore.client
 import logging
-import updatemyip.provider as provider
+import mcddns.provider as provider
 
 
 class CheckIP(provider.AddressProvider):

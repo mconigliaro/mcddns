@@ -1,8 +1,8 @@
-# Update My IP
+# MCDDNS
 
-[![updatemyip](https://circleci.com/gh/mconigliaro/updatemyip.svg?style=svg)](https://circleci.com/gh/mconigliaro/updatemyip)
+[![mcddns](https://circleci.com/gh/mconigliaro/mcddns.svg?style=svg)](https://circleci.com/gh/mconigliaro/mcddns)
 
-Industrial-strength dynamic DNS client
+**M**ike **C**onigliaro's industrial-strength **D**ynamic **D**omain **N**ame **S**ystem client
 
 ## Features
 
@@ -32,11 +32,11 @@ Industrial-strength dynamic DNS client
 
 ## Installation
 
-    pip install updatemyip
+    pip install mcddns
 
 ## Running the Application
 
-    updatemyip <dns_provider> <fqdn> [options]
+    mcddns <dns_provider> <fqdn> [options]
 
 Use `--help` to see available options.
 
@@ -55,13 +55,13 @@ Use `--help` to see available options.
 
 ### Writing Providers
 
-A provider is any class that inherits from `AddressProvider` or `DNSProvider`. In production mode, Python modules/packages prefixed with `updatemyip_` will automatically be imported from the following locations:
+A provider is any class that inherits from `AddressProvider` or `DNSProvider`. In production mode, Python modules/packages prefixed with `mcddns_` will automatically be imported from the following locations:
 
-1. `$XDG_CONFIG_HOME/updatemyip/providers`
-1. `/etc/updatemyip/providers`
+1. `$XDG_CONFIG_HOME/mcddns/providers`
+1. `/etc/mcddns/providers`
 1. [sys.path](https://docs.python.org/3/library/sys.html#sys.path)
 
-Example: If you create a file at `$XDG_CONFIG_HOME/updatemyip/providers/updatemyip_foo.py` with a class named `Bar` that inherits from one of the `Provider` subclasses, your module can be referenced (e.g. in command-line options) as `foo.Bar`.
+Example: If you create a file at `$XDG_CONFIG_HOME/mcddns/providers/mcddns_foo.py` with a class named `Bar` that inherits from one of the `Provider` subclasses, your module can be referenced (e.g. in command-line options) as `foo.Bar`.
 
 #### Provider Methods
 
@@ -84,11 +84,11 @@ Each provider type has a set of methods that will be called in a particular orde
 
 #### Examples
 
-I'll write more documentation if people are interested, but for now, see the examples at [updatemyip/providers](updatemyip/providers) and [tests/providers](tests/providers).
+I'll write more documentation if people are interested, but for now, see the examples at [mcddns/providers](mcddns/providers) and [tests/providers](tests/providers).
 
 #### Releases
 
-1. Bump `VERSION` in [updatemyip/meta.py](updatemyip/meta.py)
+1. Bump `VERSION` in [mcddns/meta.py](mcddns/meta.py)
 1. Update [CHANGELOG.md](CHANGELOG.md)
 1. Run `make release`
 

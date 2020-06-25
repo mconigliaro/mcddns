@@ -1,4 +1,4 @@
-VERSION := $(shell python -c 'import updatemyip.meta; print(updatemyip.meta.VERSION)')
+VERSION := $(shell python -c 'import mcddns.meta; print(mcddns.meta.VERSION)')
 
 release:
 	git tag "$(VERSION)"

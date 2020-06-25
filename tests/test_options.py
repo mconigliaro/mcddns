@@ -1,4 +1,4 @@
-import updatemyip.options as options
+import mcddns.options as options
 
 
 def test_parse():

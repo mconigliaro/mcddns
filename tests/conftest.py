@@ -1,9 +1,9 @@
 import os
 import pytest
 import tempfile
-import updatemyip
-import updatemyip.meta as meta
-import updatemyip.provider as provider
+import mcddns
+import mcddns.meta as meta
+import mcddns.provider as provider
 
 
 test_providers_path = os.path.join(os.path.dirname(__file__), "providers")
@@ -20,5 +20,5 @@ def test_state_path():
 
 @pytest.fixture
 def test_state(test_state_path):
-    updatemyip.state_write("", path=test_state_path)
+    mcddns.state_write("", path=test_state_path)
     return test_state_path

@@ -1,6 +1,6 @@
 import pytest
-import updatemyip
-import updatemyip.options as options
+import mcddns
+import mcddns.options as options
 
 
 @pytest.mark.parametrize(
@@ -8,41 +8,41 @@ import updatemyip.options as options
     [
         [
             "test.DNS -a test.Address test",
-            updatemyip.RETURN_CODE_DNS_UPDATED
+            mcddns.RETURN_CODE_DNS_UPDATED
         ],
         [
             "test.DNS -a test.AddressFalse --no-backoff test",
-            updatemyip.RETURN_CODE_ADDRESS_ERROR
+            mcddns.RETURN_CODE_ADDRESS_ERROR
         ],
         [
             "test.DNS -a test.AddressError --no-backoff test",
-            updatemyip.RETURN_CODE_ADDRESS_ERROR
+            mcddns.RETURN_CODE_ADDRESS_ERROR
         ],
         [
             "test.DNS -a test.Address --dry-run test",
-            updatemyip.RETURN_CODE_DRY_RUN
+            mcddns.RETURN_CODE_DRY_RUN
         ],
         [
             "test.DNS -a test.AddressFalse -a test.Address --no-backoff test",
-            updatemyip.RETURN_CODE_DNS_UPDATED
+            mcddns.RETURN_CODE_DNS_UPDATED
         ],
         [
             "test.DNSCheckFalse -a test.Address --no-backoff --test test",
-            updatemyip.RETURN_CODE_DNS_NOOP
+            mcddns.RETURN_CODE_DNS_NOOP
         ],
         [
             "test.DNSCheckError -a test.Address --no-backoff test",
-            updatemyip.RETURN_CODE_DNS_ERROR
+            mcddns.RETURN_CODE_DNS_ERROR
         ],
         [
             "test.DNSUpdateFalse -a test.Address --no-backoff test",
-            updatemyip.RETURN_CODE_DNS_ERROR
+            mcddns.RETURN_CODE_DNS_ERROR
         ]
     ]
 )
 def test_main(args, exit_code):
     opts = options.parse(args=args.split())
-    assert updatemyip.main(opts) == exit_code
+    assert mcddns.main(opts) == exit_code
 
 
 @pytest.mark.parametrize(
@@ -61,48 +61,48 @@ def test_main(args, exit_code):
     ]
 )
 def test_fibonacci(n, x):
-    assert updatemyip.fibonacci(n)[1] == x
+    assert mcddns.fibonacci(n)[1] == x
 
 
 def test_iterate_with_retry():
     iterable = "abc"
     tries = 3
-    result = list(updatemyip.iterate_with_retry(
+    result = list(mcddns.iterate_with_retry(
         iterable, tries=tries, no_backoff=True)
     )
     assert result == ["a", "b", "c", "a", "b", "c", "a", "b", "c"]
 
 
 def test_state_read_missing(test_state):
-    updatemyip.state_remove(path=test_state)
-    assert not updatemyip.state_read(test_state)
+    mcddns.state_remove(path=test_state)
+    assert not mcddns.state_read(test_state)
 
 
 def test_state_read(test_state):
-    state = updatemyip.state_read(test_state)
+    state = mcddns.state_read(test_state)
     assert state == ""
 
 
 def test_state_write_missing(test_state):
-    updatemyip.state_remove(path=test_state)
+    mcddns.state_remove(path=test_state)
     data = "123"
-    updatemyip.state_write(data, path=test_state)
-    assert updatemyip.state_read(path=test_state) == data
+    mcddns.state_write(data, path=test_state)
+    assert mcddns.state_read(path=test_state) == data
 
 
 def test_state_write(test_state):
     data = "456"
-    updatemyip.state_write(data, path=test_state)
-    assert updatemyip.state_read(path=test_state) == data
+    mcddns.state_write(data, path=test_state)
+    assert mcddns.state_read(path=test_state) == data
 
 
 def test_state_remove_missing(test_state):
-    updatemyip.state_remove(path=test_state)
-    assert updatemyip.state_remove(test_state)
+    mcddns.state_remove(path=test_state)
+    assert mcddns.state_remove(test_state)
 
 
 def test_state_remove(test_state):
-    assert updatemyip.state_remove(test_state)
+    assert mcddns.state_remove(test_state)
 
 
 @pytest.mark.parametrize(
@@ -113,7 +113,7 @@ def test_state_remove(test_state):
     ]
 )
 def test_return_code_class(rc, rc_class):
-    assert updatemyip.return_code_class(rc) == rc_class
+    assert mcddns.return_code_class(rc) == rc_class
 
 
 @pytest.mark.parametrize(
@@ -124,7 +124,7 @@ def test_return_code_class(rc, rc_class):
     ]
 )
 def test_return_code_class_transition(rc1, rc2, transition):
-    assert updatemyip.return_code_class_transition(rc1, rc2) == transition
+    assert mcddns.return_code_class_transition(rc1, rc2) == transition
 
 
 @pytest.mark.parametrize(
@@ -149,5 +149,5 @@ def test_return_code_class_transition(rc1, rc2, transition):
     ]
 )
 def test_exit_code(return_codes, cron, test_state, exit_code):
-    updatemyip.state_write(return_codes[0], path=test_state)
-    assert updatemyip.exit_code(return_codes[1], cron, test_state) == exit_code
+    mcddns.state_write(return_codes[0], path=test_state)
+    assert mcddns.exit_code(return_codes[1], cron, test_state) == exit_code

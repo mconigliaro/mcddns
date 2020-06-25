@@ -8,8 +8,8 @@ import pkgutil
 import re
 import requests
 import sys
-import updatemyip.exceptions as exceptions
-import updatemyip.meta as meta
+import mcddns.exceptions as exceptions
+import mcddns.meta as meta
 
 
 PROVIDER_MODULE_BUILTIN_PATH = os.path.join(

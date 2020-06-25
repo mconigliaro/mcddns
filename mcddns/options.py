@@ -1,8 +1,8 @@
 import argparse
 import logging
 import sys
-import updatemyip.meta as meta
-import updatemyip.provider as provider
+import mcddns.meta as meta
+import mcddns.provider as provider
 
 
 log = logging.getLogger(__name__)
@@ -16,6 +16,7 @@ def parse(default_address_providers=[], args=None):
 
     parser = argparse.ArgumentParser(
         prog=meta.NAME,
+        description=meta.DESCRIPTION,
         epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})",
         # FIXME: https://bugs.python.org/issue27927
         formatter_class=argparse.ArgumentDefaultsHelpFormatter

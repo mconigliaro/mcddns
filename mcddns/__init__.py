@@ -3,8 +3,8 @@ import logging
 import os
 import tempfile
 import time
-import updatemyip.meta as meta
-import updatemyip.provider as provider
+import mcddns.meta as meta
+import mcddns.provider as provider
 
 RETURN_CODE_DRY_RUN = 100
 RETURN_CODE_DNS_NOOP = 101

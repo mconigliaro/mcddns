@@ -1,7 +1,7 @@
 import itertools
 import pytest
-import updatemyip.exceptions as exceptions
-import updatemyip.provider as provider
+import mcddns.exceptions as exceptions
+import mcddns.provider as provider
 
 
 def test_fetch_url():

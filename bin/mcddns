@@ -2,10 +2,10 @@
 
 import os
 import random
-import updatemyip
-import updatemyip.meta as meta
-import updatemyip.options as options
-import updatemyip.provider as provider
+import mcddns
+import mcddns.meta as meta
+import mcddns.options as options
+import mcddns.provider as provider
 
 xdg_config_home = os.getenv(
     "XDG_CONFIG_HOME", os.path.join(os.getenv("HOME"), ".config")
@@ -24,5 +24,5 @@ default_address_providers = [
 random.shuffle(default_address_providers)
 
 opts = options.parse(default_address_providers)
-return_code = updatemyip.main(opts)
-exit(updatemyip.exit_code(return_code, cron=opts.cron))
+return_code = mcddns.main(opts)
+exit(mcddns.exit_code(return_code, cron=opts.cron))

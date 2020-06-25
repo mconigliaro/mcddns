@@ -2,21 +2,21 @@
 
 import os
 import setuptools
-import updatemyip.meta as meta
+import mcddns.meta as meta
 
 setuptools.setup(
     name=meta.NAME,
     version=meta.VERSION,
     author=meta.AUTHOR,
     author_email="mike@conigliaro.org",
-    description="Industrial-strength dynamic DNS client",
+    description=meta.DESCRIPTION,
     long_description=open(os.path.join(
         os.path.dirname(__file__),
         "README.md")).read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/mconigliaro/updatemyip",
+    url="https://github.com/mconigliaro/mcddns",
     packages=setuptools.find_packages(),
-    scripts=["bin/updatemyip"],
+    scripts=["bin/mcddns"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",

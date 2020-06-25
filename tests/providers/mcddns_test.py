@@ -1,4 +1,4 @@
-import updatemyip.provider as provider
+import mcddns.provider as provider
 
 
 class Address(provider.AddressProvider):
