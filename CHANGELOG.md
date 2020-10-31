@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.0: 2020-10-31
+- Don't require class methods in providers
+
 ## 1.0.0: 2020-06-23
 - Make provider methods class methods (API change)
 - Move provider utils into provider classes (API change)
