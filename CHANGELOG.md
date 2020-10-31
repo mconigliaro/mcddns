@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.1: 2020-10-31
+- Fix packaging error (`__init__.py` required to include providers)
+
 ## 1.1.0: 2020-10-31
 - Don't require class methods in providers
 
