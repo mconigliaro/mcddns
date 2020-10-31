@@ -44,9 +44,10 @@ def main(opts):
     for provider_name, provider_cls in addr_providers_with_retry:
         log.info("Using address provider: %s", provider_name)
         try:
-            address = provider_cls.fetch(opts)
+            p = provider_cls()
+            address = p.fetch(opts)
             log.info("Got address: %s", address)
-            if provider_cls.validate(opts, address):
+            if p.validate(opts, address):
                 break
         except Exception as e:
             log.exception(e)
@@ -65,12 +66,13 @@ def main(opts):
     for provider_cls in dns_providers_with_retry:
         log.info("Using DNS provider: %s", opts.dns_provider)
         try:
-            if provider_cls.check(opts, address):
+            p = provider_cls()
+            if p.check(opts, address):
                 if opts.dry_run:
                     log.info("DNS will be updated: %s", desired_record)
                     return RETURN_CODE_DRY_RUN
                 else:
-                    if provider_cls.update(opts, address):
+                    if p.update(opts, address):
                         log.info("DNS updated: %s", desired_record)
                         return RETURN_CODE_DNS_UPDATED
                     else:

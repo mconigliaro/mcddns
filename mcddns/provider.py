@@ -26,25 +26,21 @@ class Provider(abc.ABC):
 
     log = logging.getLogger(__name__)
 
-    @classmethod
-    def options_pre(cls, parser):
+    def options_pre(self, parser):
         pass
 
-    @classmethod
-    def options_post(cls, parser, options):
+    def options_post(self, parser, options):
         pass
 
 
 class AddressProvider(Provider):
 
-    @classmethod
     @abc.abstractmethod
-    def fetch(cls, options):
+    def fetch(self, options):
         pass
 
-    @classmethod
-    def validate(cls, options, address):
-        return cls.is_ipv4_address(address)
+    def validate(self, options, address):
+        return self.is_ipv4_address(address)
 
     @staticmethod
     def fetch_url(url, timeout=3):
@@ -110,14 +106,12 @@ class AddressProvider(Provider):
 
 class DNSProvider(Provider):
 
-    @classmethod
     @abc.abstractmethod
-    def check(cls, options, address):
+    def check(self, options, address):
         pass
 
-    @classmethod
     @abc.abstractmethod
-    def update(cls, options, address):
+    def update(self, options, address):
         pass
 
 
@@ -154,7 +148,7 @@ def list_providers(*types):
     else:
         invalid_types = [str(t) for t in types if t not in valid_types]
         if invalid_types:
-            raise exceptions.NoSuchProviderTypeError(
+            raise exceptions.NoSuchProviderType(
                 f"Invalid provider types: {', '.join(invalid_types)}"
             )
 
@@ -168,4 +162,4 @@ def get_provider(name):
     try:
         return list_providers()[name]
     except KeyError:
-        raise exceptions.NoSuchProviderError(f"No such provider: {name}")
+        raise exceptions.NoSuchProvider(f"No such provider: {name}")

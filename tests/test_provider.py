@@ -104,7 +104,7 @@ def test_list_providers(types, providers):
 
 
 def test_list_providers_invalid():
-    with pytest.raises(exceptions.NoSuchProviderTypeError):
+    with pytest.raises(exceptions.NoSuchProviderType):
         provider.list_providers(int)
 
 
@@ -120,5 +120,5 @@ def test_get_provider(name, base_type):
 
 
 def test_get_provider_unknown():
-    with pytest.raises(exceptions.NoSuchProviderError):
+    with pytest.raises(exceptions.NoSuchProvider):
         provider.get_provider("test.unknown")

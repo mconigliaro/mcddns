@@ -7,9 +7,8 @@ import mcddns.provider as provider
 
 class CheckIP(provider.AddressProvider):
 
-    @classmethod
-    def fetch(cls, options):
-        return cls.fetch_url(
+    def fetch(self, options):
+        return self.fetch_url(
             "https://checkip.amazonaws.com/",
             timeout=options.timeout
         )
@@ -17,8 +16,7 @@ class CheckIP(provider.AddressProvider):
 
 class Route53(provider.DNSProvider):
 
-    @classmethod
-    def options_pre(cls, parser):
+    def options_pre(self, parser):
         parser.add_argument(
             "hosted_zone_id",
             help="aws route53 hosted zone id"
@@ -29,25 +27,23 @@ class Route53(provider.DNSProvider):
             help="show log messages from boto"
         )
 
-    @classmethod
-    def options_post(cls, parser, options):
+    def options_post(self, parser, options):
         logging.getLogger("botocore").propagate = options.boto_log
 
-    @classmethod
-    def check(cls, options, address):
+    def check(self, options, address):
         if options.fqdn.endswith("."):
             fqdn = options.fqdn
         else:
             fqdn = f"{options.fqdn}."
         records = [{"Value": address}]
 
-        cls.changes = []
+        self.changes = []
 
         config = botocore.client.Config(connect_timeout=options.timeout,
                                         retries={'max_attempts': 0})
-        cls.client = boto3.client("route53", config=config)
+        self.client = boto3.client("route53", config=config)
 
-        rrsets = cls.client.list_resource_record_sets(
+        rrsets = self.client.list_resource_record_sets(
             HostedZoneId=options.hosted_zone_id,
             StartRecordName=fqdn,
             MaxItems="1",
@@ -60,19 +56,19 @@ class Route53(provider.DNSProvider):
             cur_records = rrsets[0]["ResourceRecords"]
             cur_address = " ".join(r["Value"] for r in cur_records)
             cur_record = f"{cur_name} {cur_ttl} {cur_type} {cur_address}"
-            cls.log.debug("Current DNS record: %s", cur_record)
+            self.log.debug("Current DNS record: %s", cur_record)
 
             if cur_type != options.rrtype:
-                cls.changes.append({
+                self.changes.append({
                     "Action": "DELETE",
                     "ResourceRecordSet": rrsets[0]
                 })
             elif cur_ttl == options.ttl and cur_records == records:
                 return False
         else:
-            cls.log.debug("DNS record not found: %s", options.fqdn)
+            self.log.debug("DNS record not found: %s", options.fqdn)
 
-        cls.changes.append({
+        self.changes.append({
             "Action": "UPSERT",
             "ResourceRecordSet": {
                 "Name": fqdn,
@@ -84,11 +80,10 @@ class Route53(provider.DNSProvider):
 
         return True
 
-    @classmethod
-    def update(cls, options, address):
-        cls.client.change_resource_record_sets(
+    def update(self, options, address):
+        self.client.change_resource_record_sets(
             HostedZoneId=options.hosted_zone_id,
-            ChangeBatch={"Changes": cls.changes},
+            ChangeBatch={"Changes": self.changes},
         )
 
         return True

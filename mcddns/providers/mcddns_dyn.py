@@ -5,9 +5,8 @@ import mcddns.provider as provider
 
 class CheckIP(provider.AddressProvider):
 
-    @classmethod
-    def fetch(cls, options):
-        html = cls.fetch_url(
+    def fetch(self, options):
+        html = self.fetch_url(
             "http://checkip.dyndns.com/",
             timeout=options.timeout
         )

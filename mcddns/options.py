@@ -94,9 +94,9 @@ def parse(default_address_providers=[], args=None):
         )
 
         subparser.set_defaults(dns_provider=dns_provider_name)
-        dns_provider.options_pre(subparser)
+        dns_provider().options_pre(subparser)
         for addr_provider_name, addr_provider in addr_providers.items():
-            addr_provider.options_pre(parser.add_argument_group(
+            addr_provider().options_pre(parser.add_argument_group(
                 f"{addr_provider_name} arguments")
             )
 

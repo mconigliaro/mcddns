@@ -2,9 +2,9 @@ class MCDDNSError(Exception):
     pass
 
 
-class NoSuchProviderTypeError(MCDDNSError):
+class NoSuchProviderType(MCDDNSError):
     pass
 
 
-class NoSuchProviderError(MCDDNSError):
+class NoSuchProvider(MCDDNSError):
     pass
