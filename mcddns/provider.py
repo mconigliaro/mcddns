@@ -8,6 +8,7 @@ import pkgutil
 import re
 import requests
 import sys
+
 import mcddns.exceptions as exceptions
 import mcddns.meta as meta
 

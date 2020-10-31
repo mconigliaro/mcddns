@@ -1,5 +1,6 @@
 import itertools
 import pytest
+
 import mcddns.exceptions as exceptions
 import mcddns.provider as provider
 

@@ -1,4 +1,5 @@
 import pytest
+
 import mcddns
 import mcddns.options as options
 
