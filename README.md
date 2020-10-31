@@ -9,12 +9,13 @@
 - Extensible plugin-oriented architecture with a simple API
     - Address providers are responsible for obtaining an address
     - DNS providers are responsible for managing a DNS record
-- Built-in result validation for address providers (guards against problematic endpoints)
-- Use multiple address providers (keep trying until one succeeds)
-- Optional retry with Fibonacci backoff
+- Resilient against network and endpoint failures
+    - Built-in result validation for address providers
+    - Use multiple address providers (keep trying until one succeeds)
+    - Optional retry with Fibonacci backoff
+    - Cron mode (prevents email flood if your Internet connections goes down)
 - Detailed logging
 - Dry-run mode (shows what will happen without changing anything)
-- Cron mode (prevents email flood if your Internet connections goes down)
 
 ### Built-In Providers
 
