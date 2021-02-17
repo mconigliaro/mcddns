@@ -18,7 +18,7 @@ def parse(default_address_providers=[], args=None):
     parser = argparse.ArgumentParser(
         prog=meta.NAME,
         description=meta.DESCRIPTION,
-        epilog=f"{meta.COPYRIGHT} ({meta.CONTACT})",
+        epilog=f"{meta.COPYRIGHT} ({meta.URL})",
         # FIXME: https://bugs.python.org/issue27927
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )

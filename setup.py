@@ -8,7 +8,7 @@ setuptools.setup(
     name=meta.NAME,
     version=meta.VERSION,
     author=meta.AUTHOR,
-    author_email="mike@conigliaro.org",
+    author_email=meta.EMAIL,
     description=meta.DESCRIPTION,
     long_description=open(os.path.join(
         os.path.dirname(__file__),
