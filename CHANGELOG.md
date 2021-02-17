@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.2: 2021-02-17
+- Improve exception logging
+
 ## 1.1.1: 2020-10-31
 - Fix packaging error (`__init__.py` required to include providers)
 

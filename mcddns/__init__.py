@@ -50,7 +50,8 @@ def main(opts):
             if p.validate(opts, address):
                 break
         except Exception as e:
-            log.exception(e)
+            log.error(e)
+            log.debug(e, exc_info=True)
     else:
         addr_provider_names = ', '.join(addr_providers.keys())
         log.critical("All address providers failed: %s", addr_provider_names)
@@ -81,7 +82,8 @@ def main(opts):
                 log.info("No DNS update required")
                 return RETURN_CODE_DNS_NOOP
         except Exception as e:
-            log.exception(e)
+            log.error(e)
+            log.debug(e, exc_info=True)
     else:
         log.critical("DNS provider failed: %s", opts.dns_provider)
         return RETURN_CODE_DNS_ERROR
