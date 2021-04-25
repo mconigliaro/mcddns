@@ -66,26 +66,34 @@ class AddressProvider(Provider):
         value = str(value)
         try:
             if ipaddress.ip_address(value).version == 4:
-                log.debug("Valid IPv4 address: %s", value)
-                return True
+                result = True
             else:
-                return False
+                result = False
         except ValueError:
+            result = False
+
+        if result:
+            log.debug("Valid IPv4 address: %s", value)
+        else:
             log.error("Invalid IPv4 address: %s", value)
-            return False
+        return result
 
     @staticmethod
     def is_ipv6_address(value):
         value = str(value)
         try:
             if ipaddress.ip_address(value).version == 6:
-                log.debug("Valid IPv6 address: %s", value)
-                return True
+                result = True
             else:
-                return False
+                result = False
         except ValueError:
+            result = False
+
+        if result:
+            log.debug("Valid IPv6 address: %s", value)
+        else:
             log.error("Invalid IPv6 address: %s", value)
-            return False
+        return result
 
     @staticmethod
     def is_hostname(value):
