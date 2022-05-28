@@ -1,19 +1,19 @@
 # MCDDNS
 
-[![mcddns](https://circleci.com/gh/mconigliaro/mcddns.svg?style=svg)](https://circleci.com/gh/mconigliaro/mcddns)
+[![Continuous Integration](https://github.com/mconigliaro/mcddns/actions/workflows/ci.yml/badge.svg)](https://github.com/mconigliaro/mcddns/actions/workflows/ci.yml)
 
 **M**ike **C**onigliaro's industrial-strength **D**ynamic **D**omain **N**ame **S**ystem client
 
 ## Features
 
 - Extensible plugin-oriented architecture with a simple API
-    - Address providers are responsible for obtaining an address
-    - DNS providers are responsible for managing a DNS record
+  - Address providers are responsible for obtaining an address
+  - DNS providers are responsible for managing a DNS record
 - Resilient against network and endpoint failures
-    - Built-in result validation for address providers
-    - Use multiple address providers (keep trying until one succeeds)
-    - Optional retry with Fibonacci backoff
-    - Cron mode (prevents email flood if your Internet connections goes down)
+  - Built-in result validation for address providers
+  - Use multiple address providers (keep trying until one succeeds)
+  - Optional retry with Fibonacci backoff
+  - Cron mode (prevents email flood if your Internet connections goes down)
 - Detailed logging
 - Dry-run mode (shows what will happen without changing anything)
 
@@ -45,9 +45,8 @@ Use `--help` to see available options.
 
 ### Getting Started
 
-    pip install pipenv
-    pipenv install --dev
-    pipenv shell
+    poetry install
+    poetry shell
     ...
 
 ### Running Tests
@@ -58,11 +57,11 @@ Use `--help` to see available options.
 
 A provider is any class that inherits from `AddressProvider` or `DNSProvider`. In production mode, Python modules/packages prefixed with `mcddns_` will automatically be imported from the following locations:
 
-1. `$XDG_CONFIG_HOME/mcddns/providers`
-1. `/etc/mcddns/providers`
+1. `$XDG_CONFIG_HOME/mcddns/provider`
+1. `/etc/mcddns/provider`
 1. [sys.path](https://docs.python.org/3/library/sys.html#sys.path)
 
-Example: If you create a file at `$XDG_CONFIG_HOME/mcddns/providers/mcddns_foo.py` with a class named `Bar` that inherits from one of the `Provider` subclasses, your module can be referenced (e.g. in command-line options) as `foo.Bar`.
+Example: If you create a file at `$XDG_CONFIG_HOME/mcddns/provider/mcddns_foo.py` with a class named `Bar` that inherits from one of the `Provider` subclasses, your module can be referenced (e.g. in command-line options) as `foo.Bar`.
 
 #### Provider Methods
 
@@ -85,11 +84,11 @@ Each provider type has a set of methods that will be called in a particular orde
 
 #### Examples
 
-I'll write more documentation if people are interested, but for now, see the examples at [mcddns/providers](mcddns/providers) and [tests/providers](tests/providers).
+I'll write more documentation if people are interested, but for now, see the examples at [mcddns/provider](mcddns/provider) and [tests/provider](tests/provider).
 
 #### Releases
 
-1. Bump `VERSION` in [mcddns/meta.py](mcddns/meta.py)
+1. Bump `version` in [pyproject.toml](pyproject.toml)
 1. Update [CHANGELOG.md](CHANGELOG.md)
 1. Run `make release`
 

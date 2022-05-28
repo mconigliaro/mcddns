@@ -1,4 +1,5 @@
 import itertools
+
 import pytest
 
 import mcddns.exceptions as exceptions
@@ -16,8 +17,8 @@ def test_fetch_url():
         ["::1", True],
         ["test", False],
         [True, False],
-        [False, False]
-    ]
+        [False, False],
+    ],
 )
 def test_is_ip_address(value, result):
     assert provider.AddressProvider.is_ip_address(value) == result
@@ -30,8 +31,8 @@ def test_is_ip_address(value, result):
         ["::1", False],
         ["test", False],
         [True, False],
-        [False, False]
-    ]
+        [False, False],
+    ],
 )
 def test_is_ipv4_address(value, result):
     assert provider.AddressProvider.is_ipv4_address(value) == result
@@ -44,8 +45,8 @@ def test_is_ipv4_address(value, result):
         ["127.0.0.1", False],
         ["test", False],
         [True, False],
-        [False, False]
-    ]
+        [False, False],
+    ],
 )
 def test_is_ipv6_address(value, result):
     assert provider.AddressProvider.is_ipv6_address(value) == result
@@ -53,11 +54,7 @@ def test_is_ipv6_address(value, result):
 
 @pytest.mark.parametrize(
     "value, result",
-    [
-        ["foo.bar.", True],
-        [str(itertools.repeat("x", 256)), False],
-        ["fail!", False]
-    ]
+    [["foo.bar.", True], [str(itertools.repeat("x", 256)), False], ["fail!", False]],
 )
 def test_is_hostname(value, result):
     assert provider.AddressProvider.is_hostname(value) == result
@@ -68,19 +65,14 @@ def test_is_hostname(value, result):
     [
         ["test", None, "test"],
         ["test_test", "test_", "test"],
-        ["foo_test", "otherprefix", "foo_test"]
-    ]
+        ["foo_test", "otherprefix", "foo_test"],
+    ],
 )
 def test_strip_prefix(original, prefix, result):
     assert provider.strip_prefix(original, prefix) == result
 
 
-@pytest.mark.parametrize(
-    "original, result",
-    [
-        [int, "builtins.int"]
-    ]
-)
+@pytest.mark.parametrize("original, result", [[int, "builtins.int"]])
 def test_provider_full_name(original, result):
     assert provider.provider_full_name(original) == result
 
@@ -88,18 +80,34 @@ def test_provider_full_name(original, result):
 @pytest.mark.parametrize(
     "types, providers",
     [
-        [None,
-            ["test.Address", "test.AddressFalse", "test.AddressError",
-             "test.DNS", "test.DNSCheckFalse", "test.DNSCheckError",
-             "test.DNSUpdateFalse"]],
-        [provider.AddressProvider,
-            ["test.Address", "test.AddressFalse", "test.AddressError"]],
-        [provider.DNSProvider,
-            ["test.DNS", "test.DNSCheckFalse", "test.DNSCheckError",
-             "test.DNSUpdateFalse"]]
-    ]
+        [
+            None,
+            [
+                "test.Address",
+                "test.AddressFalse",
+                "test.AddressError",
+                "test.DNS",
+                "test.DNSCheckFalse",
+                "test.DNSCheckError",
+                "test.DNSUpdateFalse",
+            ],
+        ],
+        [
+            provider.AddressProvider,
+            ["test.Address", "test.AddressFalse", "test.AddressError"],
+        ],
+        [
+            provider.DNSProvider,
+            [
+                "test.DNS",
+                "test.DNSCheckFalse",
+                "test.DNSCheckError",
+                "test.DNSUpdateFalse",
+            ],
+        ],
+    ],
 )
-def test_list_providers(types, providers):
+def test_list_providers_valid(types, providers):
     assert list(provider.list_providers(types).keys()) == providers
 
 
@@ -110,10 +118,7 @@ def test_list_providers_invalid():
 
 @pytest.mark.parametrize(
     "name, base_type",
-    [
-        ["test.Address", provider.AddressProvider],
-        ["test.DNS", provider.DNSProvider]
-    ]
+    [["test.Address", provider.AddressProvider], ["test.DNS", provider.DNSProvider]],
 )
 def test_get_provider(name, base_type):
     assert base_type in provider.get_provider(name).__bases__

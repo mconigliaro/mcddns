@@ -2,25 +2,21 @@ import mcddns.provider as provider
 
 
 class Address(provider.AddressProvider):
-
     def fetch(self, options):
         return "127.0.0.1"
 
 
 class AddressFalse(provider.AddressProvider):
-
     def fetch(self, options):
         return "Test"
 
 
 class AddressError(provider.AddressProvider):
-
     def fetch(self, options):
         raise Exception("Test")
 
 
 class DNS(provider.DNSProvider):
-
     def check(self, options, address):
         return True
 
@@ -29,7 +25,6 @@ class DNS(provider.DNSProvider):
 
 
 class DNSCheckFalse(provider.DNSProvider):
-
     def options_pre(self, parser):
         parser.add_argument("--test", action="store_true", required=True)
 
@@ -41,7 +36,6 @@ class DNSCheckFalse(provider.DNSProvider):
 
 
 class DNSCheckError(provider.DNSProvider):
-
     def check(self, options, address):
         raise Exception("Test")
 
@@ -50,7 +44,6 @@ class DNSCheckError(provider.DNSProvider):
 
 
 class DNSUpdateFalse(provider.DNSProvider):
-
     def check(self, options, address):
         return True
 

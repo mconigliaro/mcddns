@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "mcddns"
+version = "1.2.0"
+description = "Industrial-strength dynamic DNS client"
+readme = "README.md"
+authors = ["Mike Conigliaro <mike@conigliaro.org>"]
+homepage = "https://github.com/mconigliaro/mcddns"
+repository = "https://github.com/mconigliaro/mcddns"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Topic :: Internet :: Name Service (DNS)",
+    "Topic :: System :: Systems Administration",
+]
+
+[tool.poetry.dependencies]
+boto3 = "^1.23"
+requests = "^2.27"
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+black = { version = "^22.3.0", allow-prereleases = true }
+pytest = "^6.2"
+pytest-cov = "^3.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+mcddns = "mcddns.cli:main"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+addopts = "--cov mcddns -ra"

@@ -1,4 +1,5 @@
 import abc
+import argparse
 import importlib
 import inspect
 import ipaddress
@@ -6,18 +7,16 @@ import logging
 import os
 import pkgutil
 import re
-import requests
 import sys
+from typing import Type
+
+import requests
 
 import mcddns.exceptions as exceptions
-import mcddns.meta as meta
 
 
-PROVIDER_MODULE_BUILTIN_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "providers"
-)
-PROVIDER_MODULE_PREFIX = f"{meta.NAME}_"
+PROVIDER_MODULE_BUILTIN_PATH = os.path.dirname(__file__)
+PROVIDER_MODULE_PREFIX = f"mcddns_"
 
 log = logging.getLogger(__name__)
 
@@ -26,32 +25,33 @@ class Provider(abc.ABC):
 
     log = logging.getLogger(__name__)
 
-    def options_pre(self, parser):
+    def options_pre(self, parser: argparse.ArgumentParser):
         pass
 
-    def options_post(self, parser, options):
+    def options_post(
+        self, parser: argparse.ArgumentParser, options: argparse.Namespace
+    ):
         pass
 
 
 class AddressProvider(Provider):
-
     @abc.abstractmethod
-    def fetch(self, options):
+    def fetch(self, options: argparse.Namespace) -> str:
         pass
 
-    def validate(self, options, address):
+    def validate(self, options: argparse.Namespace, address: str) -> bool:
         return self.is_ipv4_address(address)
 
     @staticmethod
-    def fetch_url(url, timeout=3):
+    def fetch_url(url: str, timeout: int = 3) -> str:
         try:
             return requests.get(url, timeout=timeout).text.strip()
         except requests.exceptions.RequestException as e:
             log.error(e)
-            return None
+            return ""
 
     @staticmethod
-    def is_ip_address(value):
+    def is_ip_address(value: str) -> bool:
         value = str(value)
         try:
             ipaddress.ip_address(value)
@@ -62,7 +62,7 @@ class AddressProvider(Provider):
             return False
 
     @staticmethod
-    def is_ipv4_address(value):
+    def is_ipv4_address(value: str) -> bool:
         value = str(value)
         try:
             if ipaddress.ip_address(value).version == 4:
@@ -79,7 +79,7 @@ class AddressProvider(Provider):
         return result
 
     @staticmethod
-    def is_ipv6_address(value):
+    def is_ipv6_address(value: str) -> bool:
         value = str(value)
         try:
             if ipaddress.ip_address(value).version == 6:
@@ -96,7 +96,7 @@ class AddressProvider(Provider):
         return result
 
     @staticmethod
-    def is_hostname(value):
+    def is_hostname(value: str) -> bool:
         if len(value) > 255:
             result = False
         else:
@@ -113,43 +113,40 @@ class AddressProvider(Provider):
 
 
 class DNSProvider(Provider):
-
     @abc.abstractmethod
-    def check(self, options, address):
+    def check(self, options: argparse.Namespace, address: str):
         pass
 
     @abc.abstractmethod
-    def update(self, options, address):
+    def update(self, options: argparse.Namespace, address: str):
         pass
 
 
-def import_modules(*paths):
+def import_modules(*paths: str) -> dict:
     sys.path = list(paths) + sys.path
     modules = [
-        m.name for m in pkgutil.iter_modules()
+        m.name
+        for m in pkgutil.iter_modules()
         if m.name.startswith(PROVIDER_MODULE_PREFIX)
     ]
     return {m: importlib.import_module(m) for m in modules}
 
 
-def strip_prefix(value, prefix):
+def strip_prefix(value: str, prefix: str) -> str:
+    return value[len(prefix) :] if prefix and value.startswith(prefix) else value
+
+
+def provider_full_name(obj: Provider) -> str:
+    module = inspect.getmodule(obj)
     return (
-        value[len(prefix):]
-        if prefix and value.startswith(prefix)
-        else value
+        f"{strip_prefix(module.__name__, PROVIDER_MODULE_PREFIX)}.{obj.__name__}"
+        if module
+        else ""
     )
 
 
-def provider_full_name(obj):
-    module_name = strip_prefix(
-        inspect.getmodule(obj).__name__,
-        PROVIDER_MODULE_PREFIX
-    )
-    return f"{module_name}.{obj.__name__}"
-
-
-def list_providers(*types):
-    valid_types = Provider.__subclasses__()
+def list_providers(*types: Type) -> dict:
+    valid_types = tuple(Provider.__subclasses__())
 
     if not [t for t in types if t]:
         types = valid_types
@@ -161,12 +158,12 @@ def list_providers(*types):
             )
 
     return {
-        provider_full_name(cls): cls for cls
-        in sum([t.__subclasses__() for t in types], [])
+        provider_full_name(cls): cls
+        for cls in sum([t.__subclasses__() for t in types], [])
     }
 
 
-def get_provider(name):
+def get_provider(name: str) -> Provider:
     try:
         return list_providers()[name]
     except KeyError:

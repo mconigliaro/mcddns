@@ -1,48 +1,42 @@
 import pytest
 
 import mcddns
-import mcddns.options as options
+import mcddns.cli as cli
 
 
 @pytest.mark.parametrize(
     "args, exit_code",
     [
-        [
-            "test.DNS -a test.Address test",
-            mcddns.RETURN_CODE_DNS_UPDATED
-        ],
+        ["test.DNS -a test.Address test", mcddns.RETURN_CODE_DNS_UPDATED],
         [
             "test.DNS -a test.AddressFalse --no-backoff test",
-            mcddns.RETURN_CODE_ADDRESS_ERROR
+            mcddns.RETURN_CODE_ADDRESS_ERROR,
         ],
         [
             "test.DNS -a test.AddressError --no-backoff test",
-            mcddns.RETURN_CODE_ADDRESS_ERROR
+            mcddns.RETURN_CODE_ADDRESS_ERROR,
         ],
-        [
-            "test.DNS -a test.Address --dry-run test",
-            mcddns.RETURN_CODE_DRY_RUN
-        ],
+        ["test.DNS -a test.Address --dry-run test", mcddns.RETURN_CODE_DRY_RUN],
         [
             "test.DNS -a test.AddressFalse -a test.Address --no-backoff test",
-            mcddns.RETURN_CODE_DNS_UPDATED
+            mcddns.RETURN_CODE_DNS_UPDATED,
         ],
         [
             "test.DNSCheckFalse -a test.Address --no-backoff --test test",
-            mcddns.RETURN_CODE_DNS_NOOP
+            mcddns.RETURN_CODE_DNS_NOOP,
         ],
         [
             "test.DNSCheckError -a test.Address --no-backoff test",
-            mcddns.RETURN_CODE_DNS_ERROR
+            mcddns.RETURN_CODE_DNS_ERROR,
         ],
         [
             "test.DNSUpdateFalse -a test.Address --no-backoff test",
-            mcddns.RETURN_CODE_DNS_ERROR
-        ]
-    ]
+            mcddns.RETURN_CODE_DNS_ERROR,
+        ],
+    ],
 )
 def test_main(args, exit_code):
-    opts = options.parse(args=args.split())
+    opts = cli.parse(args=args.split())
     assert mcddns.main(opts) == exit_code
 
 
@@ -58,8 +52,8 @@ def test_main(args, exit_code):
         [6, 13],
         [7, 21],
         [8, 34],
-        [9, 55]
-    ]
+        [9, 55],
+    ],
 )
 def test_fibonacci(n, x):
     assert mcddns.fibonacci(n)[1] == x
@@ -68,9 +62,7 @@ def test_fibonacci(n, x):
 def test_iterate_with_retry():
     iterable = "abc"
     tries = 3
-    result = list(mcddns.iterate_with_retry(
-        iterable, tries=tries, no_backoff=True)
-    )
+    result = list(mcddns.iterate_with_retry(iterable, tries=tries, no_backoff=True))
     assert result == ["a", "b", "c", "a", "b", "c", "a", "b", "c"]
 
 
@@ -111,18 +103,14 @@ def test_state_remove(test_state):
     [
         ["", None],
         [100, 1],
-    ]
+    ],
 )
 def test_return_code_class(rc, rc_class):
     assert mcddns.return_code_class(rc) == rc_class
 
 
 @pytest.mark.parametrize(
-    "rc1, rc2, transition",
-    [
-        [100, 200, (1, 2)],
-        [300, 400, (3, 4)]
-    ]
+    "rc1, rc2, transition", [[100, 200, (1, 2)], [300, 400, (3, 4)]]
 )
 def test_return_code_class_transition(rc1, rc2, transition):
     assert mcddns.return_code_class_transition(rc1, rc2) == transition
@@ -134,7 +122,6 @@ def test_return_code_class_transition(rc1, rc2, transition):
         [("", 100), False, 0],
         [("", 200), False, 0],
         [("", 300), False, 1],
-
         [("", 100), True, 0],
         [("", 200), True, 1],
         [("", 300), True, 1],
@@ -146,8 +133,8 @@ def test_return_code_class_transition(rc1, rc2, transition):
         [(200, 300), True, 1],
         [(300, 100), True, 1],
         [(300, 200), True, 1],
-        [(300, 300), True, 0]
-    ]
+        [(300, 300), True, 0],
+    ],
 )
 def test_exit_code(return_codes, cron, test_state, exit_code):
     mcddns.state_write(return_codes[0], path=test_state)
